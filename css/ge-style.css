@@ -1,0 +1,650 @@
+/*reset css*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+/*HTML5 display-role reset for older browsers*/
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {
+	border: none;
+}
+input[type="checkbox"]:focus {
+	-moz-outline-offset: -1px !important;
+	-moz-outline: 1px solid #000 !important;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+body {
+	margin:0;
+	padding:0;
+	font-family: 'Roboto', Arial, Helvetica, sans-serif;
+	font-size:12px;
+	color:#333333;
+	text-shadow: 1px 1px 1px #ffffff;
+	background-color: #ffffff;
+	background-image: url("../img/body-bg.png");
+	position:relative;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	min-width:980px;
+}
+img {
+	border:none;
+}
+a {
+	color:#248dc1;
+	text-decoration:underline;
+	cursor:pointer;
+}
+a:hover {
+	text-decoration:none;
+}
+a:focus,
+input:focus {
+	outline:none;
+}
+
+/*typography*/
+h1 {
+	margin: 0 0 10px 0;
+	padding: 0;
+	font-size: 16px;
+	font-weight: bold;
+}
+h2 {
+	margin: 0 0 10px 0;
+	padding: 0;
+	font-size: 14px;
+	font-weight: bold;
+}
+h3 {
+	margin: 0 0 10px 0;
+	padding: 0;
+	font-size: 12px;
+	font-weight: bold;
+}
+p {
+	font-size: 12px;
+	line-height: 18px;
+	margin: 5px 0;
+	padding: 0;
+}
+
+/*settings*/
+.gEmContentArea {
+	width: 980px;
+	margin: 0 auto;
+	overflow: hidden;
+}
+.clearBoth {
+	clear: both;
+}
+
+/*image specific aligns*/
+img.alignLeftImg,
+img.alignCenterImg,
+img.alignRightImg,
+img.alignNoneImg {
+	text-align: center;
+	max-width: 644px;
+	border: solid 3px #ffffff;
+	margin: 10px 0;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
+	box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
+}
+img.alignLeftImg {
+	float: left;
+	text-align: inherit;
+	margin: 10px 10px 10px 0;
+}
+img.alignCenterImg {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: inherit;
+	clear: both;
+}
+img.alignRightImg {
+	float: right;
+	text-align: inherit;
+	margin: 10px 0 10px 10px;
+}
+
+/*header*/
+.gEmHeader {
+	width: 955px;
+	height: 258px;
+	padding: 115px 0 0 25px;
+	background-image: url("../img/header-bg-image.jpg");
+	background-repeat: no-repeat;
+	border-bottom: solid 1px #d9d9d9;
+	overflow: hidden;
+	position: relative;
+	z-index: 100;
+}
+a.gEmHeaderLogo {
+	display: block;
+	width: 640px;
+	height: 120px;
+	background-image: url("../img/golden-empire-logo.png");
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	overflow: hidden;
+}
+a:hover.gEmHeaderLogo {
+	background-position: 0 -120px;
+}
+
+/*main menu*/
+ul.gEmMenuList {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	height: 40px;
+	overflow: hidden;
+	border-bottom: solid 1px #d9d9d9;
+	background-image: url("../img/menu-bg.png");
+	background-repeat: repeat-x;
+}
+ul.gEmMenuList li {
+	float: left;
+}
+ul.gEmMenuList li a {
+	display: block;
+	width: 138px;
+	color: #696969;
+	text-transform: uppercase;
+	text-decoration: none;
+	font-size: 12px;
+	line-height: 12px;
+	text-align: center;
+	padding: 14px 0;
+	font-weight: bold;
+	text-shadow: 1px 1px 1px #ffffff;
+	border-right: solid 1px #d9d9d9;
+	border-left: solid 1px #ffffff;
+}
+ul.gEmMenuList li a.firstChild {
+	 border-left: none;
+}
+ul.gEmMenuList li a.lastChild {
+	border-right: none;
+	width: 140px;
+}
+ul.gEmMenuList li a:hover,
+ul.gEmMenuList li a.active {
+	background-image: url("../img/menu-bg-hover.png");
+	background-repeat: repeat-x;
+	color: #ff6f6f;
+}
+
+/*content*/
+.gEmSection {
+	overflow: hidden;
+	margin: 20px 0;
+	text-shadow: 1px 1px 1px #ffffff;
+	min-height: 500px;
+}
+.gEmSectionLeft {
+	float: left;
+	width: 280px;
+}
+.gEmSectionRight {
+	float: left;
+	width: 660px;
+	padding: 0 20px;
+	margin-bottom: 20px;
+}
+
+/*index page*/
+.pageIndexSeparator {
+	border-top: solid 1px #cccccc;
+	border-bottom: solid 1px #ffffff;
+	margin: 10px 0 20px 0;
+}
+.pageSingle .pageIndexSeparator {
+	margin: 10px 0;
+}
+.gEmIndexItemBox {
+	overflow: hidden;
+	padding: 0 0 10px 0;
+}
+a.gEmIndexItemImg,
+.gEmIndexItemImg {
+	float: left;
+	display: block;
+	text-decoration: none;
+	width: 260px;
+	height: 206px;
+	margin: 0 10px 0 0;
+	overflow: hidden;
+}
+.gEmIndexItemImg img {
+	max-width: 250px;
+	border: solid 3px #ffffff;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
+	box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
+}
+.hiddenLink {
+	width: 256px;
+	height: 201px;
+	background-image: url("../img/gEm-white-75.png");
+	position: relative;
+	top: -201px;
+	left: -256px;
+	overflow: hidden;
+}
+.hiddenLinkIcon {
+	width: 40px;
+	height: 40px;
+	margin: 40px auto 0;
+	background-image: url("../img/golden-empire-icons-40x40px.png");
+	background-repeat: no-repeat;
+	background-position: 0 -480px;
+}
+.hiddenLinkTitle {
+	width: 180px;
+	height: 20px;
+	margin: 10px auto 0;
+	text-align: center;
+	color: #696969;
+	font-size: 12px;
+	font-weight: bold;
+	text-transform: uppercase;
+	text-shadow: 1px 1px 1px #ffffff;
+}
+.hiddenLinkButton {
+	width: 100px;
+	height: 17px;
+	margin: 5px auto 0;
+	font-size: 12px;
+	line-height: 12px;
+	text-align: center;
+	padding: 13px 5px 10px 5px;
+	color: #ffffff;
+	text-shadow: none;
+	background-color: #cccccc;
+}
+.hiddenLinkButton:hover {
+	background-color: #999999;
+}
+.gEmIndexItemDesc h2,
+.gEmIndexItemDesc h2 a {
+	text-decoration: none;
+	text-transform: uppercase;
+	color: #ff6f6f;
+	font-size: 18px;
+	font-weight: bold;
+	margin: 5px 0 0 0;
+}
+.gEmIndexItemDesc h2 {
+	color: #333333;
+}
+.gEmIndexItemDesc h2 a:hover {
+	color: #333333;
+}
+.gEmIndexPriceBox {
+	float: left;
+	height: 17px;
+	font-size: 14px;
+	line-height: 14px;
+	font-weight: bold;
+	text-align: center;
+	margin: 5px 0 0 0;
+	padding: 13px 15px 10px 15px;
+	color: #ffffff;
+	text-shadow: none;
+	background-color: #65b11d;
+}
+.gEmIndexPriceBox span.currency {
+	font-size: 12px;
+	font-weight: normal;
+	text-transform: uppercase;
+	color: #f1f1f1;
+	padding: 0 0 0 3px;
+}
+.gEmIndexPriceBoxGrey {
+	font-size: 12px;
+	line-height: 14px;
+	font-weight: normal;
+	background-color: #cccccc;
+}
+.gEmButtonsBox {
+	float: left;
+	margin: 10px 0 0 0;
+	width: 660px;
+	overflow: hidden;
+}
+a.gEmPhoto,
+a.gEmPedigree,
+a.gEmLitters,
+a.gEmProgress {
+	float: left;
+	height: 27px;
+	color: #696969;
+	font-size: 12px;
+	line-height: 12px;
+	text-decoration: none;
+	margin: 0 10px 0 0;
+	padding: 13px 10px 0 40px;
+	background-color: #ffffff;
+	background-image: url("../img/golden-empire-icons-40x40px.png");
+	background-repeat: no-repeat;
+}
+a.gEmPhoto {
+	background-position: 0 -160px;
+}
+a:hover.gEmPhoto {
+	background-position: 0 -200px;
+}
+a.gEmPedigree {
+	background-position: 0 -240px;
+}
+a:hover.gEmPedigree {
+	background-position: 0 -280px;
+}
+a.gEmLitters {
+	background-position: 0 -320px;
+}
+a:hover.gEmLitters {
+	background-position: 0 -360px;
+}
+a.gEmProgress {
+	background-position: 0 -400px;
+}
+a:hover.gEmProgress {
+	background-position: 0 -440px;
+}
+a:hover.gEmPhoto,
+a:hover.gEmPedigree,
+a:hover.gEmLitters,
+a:hover.gEmProgress {
+	color: #ffffff;
+	text-shadow: none;
+	background-color: #ff6f6f;
+}
+
+/*single page*/
+h2.pageSingleTitle {
+	font-size: 26px;
+	font-weight: bold;
+}
+.gEmSingleItem {
+	width: 660px;
+	margin: 0 0 20px 0;
+}
+.gEmSinglePartTitle {
+	width: 640px;
+	height: 27px;
+	color: #696969;
+	font-size: 14px;
+	line-height: 14px;
+	text-transform: uppercase;
+	padding: 13px 10px 0 37px;
+	background-image: url("../img/golden-empire-icons-40x40px.png");
+	background-repeat: no-repeat;
+}
+.gEmPedigreeBox .gEmSinglePartTitle {
+	background-position: 0 -240px;
+}
+.gEmPhotoBox .gEmSinglePartTitle {
+	background-position: 0 -160px;
+}
+.gEmLittersBox .gEmSinglePartTitle {
+	background-position: 0 -320px;
+}
+.gEmProgressBox .gEmSinglePartTitle {
+	background-position: 0 -400px;
+}
+.gEmSingleItemDesc p {
+	margin: 10px 0;
+	padding: 0;
+	font-size: 12px;
+	line-height: 16px;
+}
+.gEmPedigreeTable {
+	width: 100%;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+.gEmPedigreeTable tr td {
+	padding: 10px;
+	border: solid 1px #dbdbdb;
+	background-image: url("../img/white-bg-60.png");
+	text-shadow: 1px 1px 1px #ffffff;
+	vertical-align: middle;
+}
+.gEmPedigreeTable tr td.gEmPedigreeTableSeparator {
+	width: 17px;
+	border: none;
+	background-image: none;
+}
+.gEmPedigreeTableItem,
+.gEmLittersTableItem {
+	overflow: hidden;
+}
+a.gEmPedigreeTableItemImg {
+	display: block;
+	text-decoration: none;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	margin: 0 auto;
+}
+.gEmPedigreeTableItemDesc {
+	width: 160px;
+	text-align: center;
+	font-size: 12px;
+	margin: 5px auto 0;
+}
+.gEmLittersTable {
+	width: 100%;
+}
+.gEmLittersTable tr td {
+	padding: 10px;
+	background-image: url("../img/gEm-grey-20.png");
+	border-bottom: solid 1px #f1f1f1;
+	border-right: solid 1px #f1f1f1;
+}
+.gEmLittersTable tr:last-child td {
+	border-bottom: none;
+}
+.gEmLittersTable tr td.gEmLittersTableLitters {
+	border-right: none;
+	font-size: 14px;
+	font-weight: bold;
+}
+a.gEmLittersTableItemImg {
+	float: left;
+	display: block;
+	text-decoration: none;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	margin: 0 10px 0 0;
+}
+.gEmLittersTableItemDesc {
+	margin: 16px 0 0 10px;
+}
+
+/*left sidebar*/
+.gEmSidebarMenu {
+	margin: 0 0 20px 0;
+}
+.gEmSidebarMenuTitle {
+	width: 280px;
+	height: 40px;
+	background-image: url("../img/menu-bg.png");
+	background-repeat: repeat-x;
+	overflow: hidden;
+	cursor: pointer;
+}
+.gEmSidebarMenuTitleText {
+	width: 230px;
+	float: left;
+	font-size: 14px;
+	line-height: 14px;
+	margin: 14px 0 0 10px;
+}
+.gEmSidebarMenuTitleIcon {
+	float: right;
+	width: 40px;
+	height: 40px;
+	background-image: url("../img/golden-empire-icons-40x40px.png");
+	background-repeat: no-repeat;
+	background-position: 0 -560px;
+}
+.gEmSidebarMenuTitle.active .gEmSidebarMenuTitleIcon {
+	background-position: 0 -600px;
+}
+ul.gEmSidebarMenuList {
+	display: none;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	background-image: url("../img/white-bg-60.png");
+	border-bottom: solid 1px #d9d9d9;
+	overflow: hidden;
+}
+ul.gEmSidebarMenuList li {
+	margin: 15px 0 15px 10px;
+	padding: 0 0 0 16px;
+	background-image: url("../img/list-icon.png");
+	background-repeat: no-repeat;
+	background-position: 0 0;
+}
+ul.gEmSidebarMenuList li a {
+	text-decoration: none;
+	font-weight: bold;
+}
+ul.gEmSidebarMenuList li a:hover {
+	color: #696969;
+}
+ul.gEmSidebarMenuList li span {
+	padding: 0 0 0 5px;
+	color: #999999;
+}
+ul.gEmSidebarMenuList li span.sale {
+	color: #ff6f6f;
+}
+.gEmSidebarContacts {
+	background-image: url("../img/white-bg-60.png");
+}
+.gEmSidebarContactsTitle {
+	font-size: 14px;
+	line-height: 14px;
+	font-weight: bold;
+	color: #1aa849;
+	text-transform: uppercase;
+	padding: 13px 0 0 40px;
+}
+.gEmSidebarContactsHeader {
+	width: 280px;
+	height: 40px;
+	background-image: url("../img/golden-empire-icons-40x40px.png");
+	background-repeat: no-repeat;
+	background-position: 0 0;
+}
+.gEmSidebarContactsBody {
+	padding: 0 10px 5px 40px;
+}
+.gEmSidebarContactsBody p {
+	margin: 0 0 5px 0;
+	padding: 0;
+	line-height: 16px;
+}
+.gEmSidebarContactsBody p.compTitle {
+	font-size: 18px;
+	font-weight: bold;
+	margin: 0 0 8px 0;
+}
+
+/*breadcrumbs*/
+.gEmBreadcrumbsBox {
+	padding: 13px 10px;
+	width: 660px;
+	background-image: url("../img/white-bg-60.png");
+	margin: 0 0 10px 0;
+	font-size: 12px;
+	line-height: 12px;
+}
+.gEmBreadcrumbsBox a {
+	text-decoration: none;
+	color: #333333;
+}
+
+/*footer*/
+.gEmFooter {
+	width: 980px;
+	height: 30px;
+	position: absolute;
+	bottom: 0;
+	overflow: hidden;
+}
+.gEmFooterCopy {
+	float: right;
+	width: 230px;
+	text-shadow: 1px 1px 1px #ffffff;
+	color: #999999;
+	padding: 5px 5px 5px 0;
+	font-size: 10px;
+	text-align: right;
+	line-height: 10px;
+	border-top: solid 1px #999999;
+}
+
+/*go top button*/
+a.goTop {
+	position: fixed;
+	right:10px;
+	bottom:10px;
+	display: none;
+	width:40px;
+	height:40px;
+	background-color: #ffffff;
+	background-image: url("../img/golden-empire-icons-40x40px.png");
+	background-repeat: no-repeat;
+	background-position: 0 -80px;
+	cursor:pointer;
+}
+a:hover.goTop {
+	background-color: #ff6f6f;
+	background-position: 0 -120px;
+}
