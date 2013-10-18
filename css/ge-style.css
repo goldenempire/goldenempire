@@ -262,48 +262,8 @@ a.gEmIndexItemImg,
 	-moz-box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
 	box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.3);
 }
-.hiddenLink {
-	width: 256px;
-	height: 201px;
-	background-image: url("../img/gEm-white-75.png");
-	position: relative;
-	top: -201px;
-	left: -256px;
-	overflow: hidden;
-}
-.hiddenLinkIcon {
-	width: 40px;
-	height: 40px;
-	margin: 40px auto 0;
-	background-image: url("../img/golden-empire-icons-40x40px.png");
-	background-repeat: no-repeat;
-	background-position: 0 -480px;
-}
-.hiddenLinkTitle {
-	width: 180px;
-	height: 20px;
-	margin: 10px auto 0;
-	text-align: center;
-	color: #696969;
-	font-size: 12px;
-	font-weight: bold;
-	text-transform: uppercase;
-	text-shadow: 1px 1px 1px #ffffff;
-}
-.hiddenLinkButton {
-	width: 100px;
-	height: 17px;
-	margin: 5px auto 0;
-	font-size: 12px;
-	line-height: 12px;
-	text-align: center;
-	padding: 13px 5px 10px 5px;
-	color: #ffffff;
-	text-shadow: none;
-	background-color: #cccccc;
-}
-.hiddenLinkButton:hover {
-	background-color: #999999;
+a:hover.gEmIndexItemImg img {
+	border: solid 3px #e6e6e6;
 }
 .gEmIndexItemDesc h2,
 .gEmIndexItemDesc h2 a {
@@ -502,6 +462,22 @@ a.gEmLittersTableItemImg {
 }
 .gEmLittersTableItemDesc {
 	margin: 16px 0 0 10px;
+}
+.gEmPhotoGallBox {
+	width: 660px;
+	height: 216px;
+}
+a.gEmPhotoGallItem {
+	float: left;
+	display: block;
+	width: 95px;
+	height: 95px;
+	margin: 0 8px 8px 0;
+	border: solid 3px #ffffff;
+	overflow: hidden;
+}
+a:hover.gEmPhotoGallItem {
+	border: solid 3px #999999;
 }
 
 /*left sidebar*/
