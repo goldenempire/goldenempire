@@ -271,4 +271,3 @@ $(document).ready(function(){
 		autohidemode : false
 	});
 });
-
