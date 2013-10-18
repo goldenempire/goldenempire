@@ -42,8 +42,9 @@ var dataBase = [
         birth: '13.07.2009',
         father: 200,
         mother: 201,
-        category: 'catMale',
-        url: 'cats-m-item.html'
+        category: 'catChildren',
+        url: 'cats-m-item.html',
+        state: 'Продается'
     },
     {
         idx: 110,
@@ -55,8 +56,9 @@ var dataBase = [
         birth: '13.07.2011',
         father: 200,
         mother: 201,
-        category: 'catMale',
-        url: 'cats-m-item.html'
+        category: 'catChildren',
+        url: 'cats-m-item.html',
+        state: 'Продается'
     },
     {
         idx: 200,
@@ -69,7 +71,8 @@ var dataBase = [
         father: null,
         mother: null,
         category: 'catMale',
-        url: 'cats-m-item.html'
+        url: 'cats-m-item.html',
+        state: null
     },
     {
         idx: 201,
@@ -82,7 +85,8 @@ var dataBase = [
         father: null,
         mother: null,
         category: 'catFemale',
-        url: 'cats-m-item.html'
+        url: 'cats-m-item.html',
+        state: null
     }
 ];
 
@@ -132,9 +136,13 @@ function proccessTopMenu() {
         var li = $('<li></li>').appendTo(gEmMenuList);
         var a = $('<a></a>').appendTo(li);
         a.attr('index', i);
+        pageList[i].index = i;
         a.text(pageList[i].text);
         a.click(function () {
-            topMenuItemClick($(this));
+            topMenuItemClick( $(this) );
+
+            var pageItem = pageList[ $(this).attr('index') ];
+            displayPage( pageItem.url, pageItem );
         });
         arr.push(a);
     }
@@ -143,38 +151,100 @@ function proccessTopMenu() {
     arr[0].click();
 }
 
-function displayPage(url, cb) {
+function topMenuItemClick(self){
+    $('.gEmMenuList li a').each(function () {
+        $(this).removeClass("active");
+    });
+    self.addClass("active");
+}
+
+function displayPage(url, pageItem, cb) {
     $.get(url, function (data) {
         //console.log( $('.gEmSectionRight', $(data)) );
         $('.gEmSectionRight').replaceWith( $('.gEmSectionRight', $(data)) );
-        cb();
-    });
-}
-
-function topMenuItemClick(item) {
-    var i = item.attr('index');
-    var pageItem = pageList[i];
-    displayPage(pageItem.url, function(){
-        $('.gEmMenuList li a').each(function () {
-            $(this).removeClass("active");
-        });
-        item.addClass("active");
 
         if ($('.pageIndex').length > 0) {
-            displayList(pageItem, getAllByCategory(pageItem.category));
+            displayList(pageItem, getDbByCategory(pageItem.category));
         }
 
         if ($('.pageSingle').length > 0) {
             displaySingle(pageItem);
         }
+
+        if(cb) cb();
     });
 }
 
-function displaySingle(pageItem) {
-
+function deleteParentTag(tag, tagName){
+    var p = tag;
+    while(p.get(0).tagName.toLowerCase()!=tagName.toLowerCase()){
+        p = p.parent();
+        if(!p.length){
+            break;
+        }
+    }
+    if(p.length){
+        p.remove();
+    }
 }
 
-function getAllByCategory(categoryName) {
+function displaySingle(pageItem) {
+    console.log('displaySingle', pageItem, getDbItemByIdx(pageItem.cat_idx));
+    //getDbItemByIdx(pageItem.cat_idx);
+    var pageSingle = $('.pageSingle');
+    var dbItem = getDbItemByIdx(pageItem.cat_idx);
+    for(var dbFieldName in dbItem){
+        // pageSingle
+
+        var pageField = $('#text_'+dbFieldName, pageSingle);
+
+        if('category'==dbFieldName){
+            var sc;
+            for(var i in pageList){
+                if(pageList[i].category==dbItem.category){
+                    sc = pageList[i];
+                    break;
+                }
+            }
+            console.log( $('[index="'+sc.index+'"]') );
+            $('.gEmBreadcrumbsBox').text( sc.text );
+            topMenuItemClick( $('[index="'+sc.index+'"]') );
+        }
+
+        if(pageField.length>0){
+            if(!dbItem[dbFieldName]){
+                if('state'==dbFieldName){
+                    deleteParentTag(pageField, 'div');
+                } else {
+                    deleteParentTag(pageField, 'p');
+                }
+            } else {
+                pageField.text( dbItem[dbFieldName] );
+            }
+            continue;
+        }
+
+        pageField = $('#cat_link_'+dbFieldName, pageSingle);
+        if(pageField.length>0){
+            var parentsDbItem = getDbItemByIdx(dbItem[dbFieldName]);
+            if(parentsDbItem){
+                pageField.text( parentsDbItem.name + '; ' + parentsDbItem.color_code );
+                pageField.attr('cat_idx', dbItem[dbFieldName]);
+                pageField.click(function(){
+                    //console.log('displaySingle cat num=', $(this).attr('cat_idx'));
+                    pageItem.cat_idx = $(this).attr('cat_idx');
+                    displayPage(dbItem.url, pageItem);
+                });
+            } else {
+                deleteParentTag(pageField, 'p');
+            }
+
+            continue;
+        }
+    }
+}
+
+function getDbByCategory(categoryName) {
     var a = [];
     for(var i in dataBase){
         if(dataBase[i].category==categoryName){
@@ -203,11 +273,19 @@ function displayList(pageItem, dbList) {
             var pageListItemField = $('#text_'+dbFieldName, pageListItem);
 
             if(pageListItemField.length>0){
-                var text = dbItem[dbFieldName];
-                if(!text){
-                    text = '...';
+
+                console.log('pageListItemField', pageListItemField);
+
+                if(!dbItem[dbFieldName]){
+                    if('state'==dbFieldName){
+                        deleteParentTag(pageListItemField, 'div');
+                    } else {
+                        deleteParentTag(pageListItemField, 'p');
+                    }
+                } else {
+                    pageListItemField.text( dbItem[dbFieldName] );
                 }
-                pageListItemField.text( text );
+
                 continue;
             }
 
@@ -219,15 +297,17 @@ function displayList(pageItem, dbList) {
 
             pageListItemField = $('#cat_link_'+dbFieldName, pageListItem);
             if(pageListItemField.length>0){
-                var parentsDbItem = getCategoryItemByIdx(dbItem[dbFieldName]);
+                var parentsDbItem = getDbItemByIdx(dbItem[dbFieldName]);
                 if(parentsDbItem){
                     pageListItemField.text( parentsDbItem.name + '; ' + parentsDbItem.color_code );
-                    pageListItemField.attr('cat_link', dbItem[dbFieldName]);
+                    pageListItemField.attr('cat_idx', dbItem[dbFieldName]);
                     pageListItemField.click(function(){
-                        console.log('displaySingle cat num=', $(this).attr('cat_link'));
+                        //console.log('displaySingle cat num=', $(this).attr('cat_idx'));
+                        pageItem.cat_idx = $(this).attr('cat_idx');
+                        displayPage(dbItem.url, pageItem);
                     });
                 } else {
-                    pageListItemField.text( 'N/A' );
+                    deleteParentTag(pageListItemField, 'p');
                 }
 
                 continue;
@@ -240,7 +320,7 @@ function displayList(pageItem, dbList) {
     }
 }
 
-function getCategoryItemByIdx(idx){
+function getDbItemByIdx(idx){
     for(var i in dataBase){
         if(dataBase[i].idx==idx){
             return dataBase[i];
@@ -249,15 +329,3 @@ function getCategoryItemByIdx(idx){
     return false;
 }
 
-function fillListItemByCategory(categoryName, categoryData, categoryItem) {
-    if ('catMale' == categoryName) {
-        var gEmIndexItemImg = $('.gEmIndexItemImg', categoryItem);
-        gEmIndexItemImg.removeAttr('href');
-        $('img', gEmIndexItemImg).attr('src', categoryData.logo);
-        //gEmIndexItemImg.attr('idx', categoryData.idx); // TODO or NOT_TODO
-        gEmIndexItemImg.click(function () {
-            //console.log($(this));
-            //displayPage(categoryData.url, );
-        });
-    }
-}
