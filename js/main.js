@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // test data
 var dataBase = [
     {
@@ -251,7 +250,6 @@ function fillListItemByCategory(categoryName, categoryData, categoryItem) {
     }
 }
 */
-=======
 $(document).ready(function(){
 	//fancybox gallery
 	$('.fancybox').fancybox();
@@ -273,4 +271,4 @@ $(document).ready(function(){
 		autohidemode : false
 	});
 });
->>>>>>> remotes/origin/design
+
