@@ -1,29 +1,35 @@
-$(document).ready(function(){
-	//fancybox gallery
-	$('.fancybox').fancybox();
+$(document).ready(function () {
+    //fancybox gallery
+    $('.fancybox').fancybox();
 
-	//левое меню
-	$('.gEmSidebarMenuTitle').click( function(){
-		$(this).next('ul.gEmSidebarMenuList').slideToggle(200);
-		$(this).toggleClass('active',200);
-	});
+    //скролл
+    $(".gEmPhotoGallBox").niceScroll({
+        touchbehavior : false,
+        cursorcolor : "#999999",
+        cursorborder : "none",
+        background : "#ffffff",
+        cursoropacitymax : 1,
+        cursorborderradius : 0,
+        cursorwidth : 5,
+        cursorfixedheight : 60,
+        autohidemode : false
+    });
 
-	//скролл
-	$(".gEmPhotoGallBox").niceScroll({
-		touchbehavior : false,
-		cursorcolor : "#999999",
-		cursorborder : "none",
-		background : "#ffffff",
-		cursoropacitymax : 1,
-		cursorborderradius : 0,
-		cursorwidth : 5,
-		cursorfixedheight : 60,
-		autohidemode : false
-	});
-
-	//верхнее меню
-	proccessTopMenu();
+    $('a.gEmIndexItemImg').mouseenter(function () {
+        $(this).find('.hiddenLink').animate({left: 0});
+    });
+    $('a.gEmIndexItemImg').mouseleave(function () {
+        $(this).find('.hiddenLink').animate({left: -256});
+    });
+    //левое меню
+    $('.gEmSidebarMenuTitle').click(function () {
+        $(this).next('ul.gEmSidebarMenuList').slideToggle(200);
+        $(this).toggleClass('active', 200);
+    });
+    // верхнее меню
+    proccessTopMenu();
 });
+
 // test data
 var dataBase = [
     {
@@ -83,7 +89,7 @@ var dataBase = [
 var pageList = [
     {
         text: 'О питомнике',
-        url: 'index.html',
+        url: 'about.html',
         category: 'mainPage'
     },
     {
@@ -118,10 +124,9 @@ var pageList = [
     }
 ];
 
-
 function proccessTopMenu() {
     var arr = [];
-    var gEmMenuList = $('.gEmMenuList');
+    var gEmMenuList = $('.gEmMenu .gEmMenuList');
     gEmMenuList.html('');
     for (var i in pageList) {
         var li = $('<li></li>').appendTo(gEmMenuList);
@@ -140,9 +145,8 @@ function proccessTopMenu() {
 
 function displayPage(url, cb) {
     $.get(url, function (data) {
-        $('.gEmSectionRight').parent().html(
-            $('.gEmSectionRight', $(data)).parent().html()
-        );
+        //console.log( $('.gEmSectionRight', $(data)) );
+        $('.gEmSectionRight').replaceWith( $('.gEmSectionRight', $(data)) );
         cb();
     });
 }
@@ -165,8 +169,6 @@ function topMenuItemClick(item) {
         }
     });
 }
-
-
 
 function displaySingle(pageItem) {
 
@@ -247,7 +249,6 @@ function getCategoryItemByIdx(idx){
     return false;
 }
 
-/*
 function fillListItemByCategory(categoryName, categoryData, categoryItem) {
     if ('catMale' == categoryName) {
         var gEmIndexItemImg = $('.gEmIndexItemImg', categoryItem);
@@ -256,8 +257,7 @@ function fillListItemByCategory(categoryName, categoryData, categoryItem) {
         //gEmIndexItemImg.attr('idx', categoryData.idx); // TODO or NOT_TODO
         gEmIndexItemImg.click(function () {
             //console.log($(this));
-            displayPage(categoryData.url, );
+            //displayPage(categoryData.url, );
         });
     }
 }
-*/
