@@ -1,4 +1,51 @@
+// test data
+var dataBase;
+
+var db = {
+    update : function(arr, cb){
+        this.post({ action: "update", data: arr }, cb);
+    },
+    get : function(cb){
+        this.post({ action: "get" }, cb);
+    },
+    test : function(cb){
+        this.post({ action: "test" }, cb);
+    },
+    login : function(user_name, user_pass, cb){
+        this.post({ 'user_name' : user_name, 'user_pass' : user_pass, action: "login" }, cb);
+    },
+    logout : function(cb){
+        this.post({ action: "logout" }, cb);
+    },
+    post : function(rq_data, cb){
+        $.ajax({
+            url:"db.php",
+            type: "POST",
+            data: rq_data,
+            dataType:"json",
+            success: function(rs_data){
+                //console.log('rs_data', rs_data);
+                if(rs_data.error){
+                    cb(rs_data.error);
+                } else {
+                    cb(null, rs_data.result);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if(cb) cb(xhr.status);
+            }
+        });
+    }
+};
+
 $(document).ready(function () {
+
+    db.get(function(e,o){
+        if(!e){
+            dataBase = o;
+        }
+    });
+
     //fancybox gallery
     $('.fancybox').fancybox();
 
@@ -28,67 +75,90 @@ $(document).ready(function () {
     });
     // верхнее меню
     proccessTopMenu();
+
+    // авторизация пользователя
+    processLogin();
+});
+
+$(function() {
+    $.fn.scrollToTop = function() {
+        $(this).hide().removeAttr("href");
+        if ($(window).scrollTop() >= "200") $(this).fadeIn("slow")
+        var scrollDiv = $(this);
+        $(window).scroll(function() {
+            if ($(window).scrollTop() <= "200") $(scrollDiv).fadeOut("slow")
+            else $(scrollDiv).fadeIn("slow")
+        });
+        $(this).click(function() {
+            $("html, body").animate({scrollTop: 0}, "slow")
+        })
+    }
+});
+$(function() {
+    $("#Go_Top").scrollToTop();
 });
 
 // test data
+/*
 var dataBase = [
     {
         idx: 100,
-        logo: 'img/bars1.png',
-        name: 'СHEESE CAKE SNEZHNY BARS#1',
-        breed: 'Британский к/ш, BRI',
-        color: 'Чёрный затушёванный пойнт',
-        color_code: 'BRI ns 12 31',
-        birth: '13.07.2009',
+        logo: "img/bars1.png",
+        name: "СHEESE CAKE SNEZHNY BARS#1",
+        breed: "Британский к/ш, BRI",
+        color: "Чёрный затушёванный пойнт",
+        color_code: "BRI ns 12 31",
+        birth: "13.07.2009",
         father: 200,
         mother: 201,
-        category: 'catChildren',
-        url: 'cats-m-item.html',
-        state: 'Продается'
+        category: "catChildren",
+        url: "cats-m-item.html",
+        state: "Продается"
     },
     {
         idx: 110,
-        logo: 'img/bars2.png',
-        name: 'СHEESE CAKE SNEZHNY BARS#2',
-        breed: 'Британская к/ш, BRI',
-        color: 'Чёрный затушёванный пойнт',
-        color_code: 'BRI ns 12 32',
-        birth: '13.07.2011',
+        logo: "img/bars2.png",
+        name: "СHEESE CAKE SNEZHNY BARS#2",
+        breed: "Британская к/ш, BRI",
+        color: "Чёрный затушёванный пойнт",
+        color_code: "BRI ns 12 32",
+        birth: "13.07.2011",
         father: 200,
         mother: 201,
-        category: 'catChildren',
-        url: 'cats-m-item.html',
-        state: 'Продается'
+        category: "catChildren",
+        url: "cats-m-item.html",
+        state: "Продается"
     },
     {
         idx: 200,
-        logo: 'img/index-cat.jpg',
-        name: 'Diamond-Pro Grand Bear',
-        breed: 'Британский к/ш, BRI',
-        color: 'Чёрный затушёванный пойнт',
-        color_code: 'BRI ns 12 33',
-        birth: '13.07.2009',
+        logo: "img/index-cat.jpg",
+        name: "Diamond-Pro Grand Bear",
+        breed: "Британский к/ш, BRI",
+        color: "Чёрный затушёванный пойнт",
+        color_code: "BRI ns 12 33",
+        birth: "13.07.2009",
         father: null,
         mother: null,
-        category: 'catMale',
-        url: 'cats-m-item.html',
+        category: "catMale",
+        url: "cats-m-item.html",
         state: null
     },
     {
         idx: 201,
-        logo: 'img/index-cat.jpg',
-        name: 'Diamond-Pro Katalina',
-        breed: 'Британский к/ш, BRI',
-        color: 'Чёрный затушёванный пойнт',
-        color_code: 'BRI ns 12 34',
-        birth: '13.07.2009',
+        logo: "img/index-cat.jpg",
+        name: "Diamond-Pro Katalina",
+        breed: "Британский к/ш, BRI",
+        color: "Чёрный затушёванный пойнт",
+        color_code: "BRI ns 12 34",
+        birth: "13.07.2009",
         father: null,
         mother: null,
-        category: 'catFemale',
-        url: 'cats-m-item.html',
+        category: "catFemale",
+        url: "cats-m-item.html",
         state: null
     }
 ];
+*/
 
 var pageList = [
     {
@@ -241,6 +311,19 @@ function displaySingle(pageItem) {
 
             continue;
         }
+
+        pageField = $('#attr_src_'+dbFieldName, pageSingle);
+        if(pageField.length>0){
+            pageField.attr('src', dbItem[dbFieldName] );
+            //pageField.parent().removeAttribute('href');
+            pageField.attr('cat_idx', dbItem.idx);
+            pageField.click(function(){
+                pageItem.cat_idx = $(this).attr('cat_idx');
+                displayPage(dbItem.url, pageItem);
+            });
+
+            continue;
+        }
     }
 }
 
@@ -255,7 +338,7 @@ function getDbByCategory(categoryName) {
 }
 
 function displayList(pageItem, dbList) {
-    console.log('displayList', pageItem, dbList);
+    //console.log('displayList', pageItem, dbList);
     var gEmBreadcrumbsBox = $('.gEmBreadcrumbsBox:first').clone();
     var gEmIndexItemBox = $('.gEmIndexItemBox:first').clone();
     var pageIndexSeparator = $('.pageIndexSeparator:first').clone();
@@ -274,7 +357,7 @@ function displayList(pageItem, dbList) {
 
             if(pageListItemField.length>0){
 
-                console.log('pageListItemField', pageListItemField);
+                //console.log('pageListItemField', pageListItemField);
 
                 if(!dbItem[dbFieldName]){
                     if('state'==dbFieldName){
@@ -292,6 +375,13 @@ function displayList(pageItem, dbList) {
             pageListItemField = $('#attr_src_'+dbFieldName, pageListItem);
             if(pageListItemField.length>0){
                 pageListItemField.attr('src', dbItem[dbFieldName] );
+                //pageListItemField.parent().removeAttribute('href');
+                pageListItemField.attr('cat_idx', dbItem.idx);
+                pageListItemField.click(function(){
+                    pageItem.cat_idx = $(this).attr('cat_idx');
+                    displayPage(dbItem.url, pageItem);
+                });
+
                 continue;
             }
 
@@ -329,3 +419,45 @@ function getDbItemByIdx(idx){
     return false;
 }
 
+function processLogin(){
+    $('#exit_button').parent().hide();
+    $('#enter_button').click(function(){
+        if(''==$('#user_name').val()){
+            $('#login_hint').text('Пустое имя');
+        } else if(''==$('#user_pass').val()){
+            $('#login_hint').text('Пустой пароль');
+        } else {
+            db.login($('#user_name').val(), $('#user_pass').val(), function(e,o){
+                if(e){
+                    $('#logged_as').text('Вход на сайт');
+                    $('#login_box').show();
+                    $('#login_hint').text(e);
+                    $('#exit_button').parent().hide();
+                } else {
+                    $('#login_box').hide();
+                    $('#logged_as').text(o);
+                    $('#exit_button').parent().show();
+                }
+            });
+        }
+    });
+    $('#exit_button').click(function(){
+        $('#exit_button').parent().hide();
+        db.logout(function(){
+            $('#user_pass').val('');
+            $('#logged_as').text('Вход на сайт');
+            $('#login_box').show();
+            $('#login_hint').text('');
+        });
+    });
+
+    $('#admin_button').click(function(){
+        db.getUserItemList($('#user_name').val(''), function(){
+
+        });
+    });
+}
+
+function createCatList(){
+
+}

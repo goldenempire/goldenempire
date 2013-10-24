@@ -74,7 +74,7 @@
 			<div class="gEmIndexItemBox">
 				<h2 class="pageSingleTitle" id='text_name'>N/A</h2>
 				<div class="gEmIndexItemImg">
-					<img src="img/index-cat.jpg" />
+					<img src="img/index-cat.jpg" id="attr_src_logo />
 				</div>
 				<div class="gEmIndexItemDesc">
 					<p><strong>Порода:</strong> <span id="text_breed">N/A</span></p>
@@ -292,25 +292,6 @@
 	</div>
 </div>
 <!--go top button-->
-<script language="JavaScript" type="text/javascript">
-	$(function() {
-		$.fn.scrollToTop = function() {
-			$(this).hide().removeAttr("href");
-			if ($(window).scrollTop() >= "200") $(this).fadeIn("slow")
-			var scrollDiv = $(this);
-			$(window).scroll(function() {
-				if ($(window).scrollTop() <= "200") $(scrollDiv).fadeOut("slow")
-				else $(scrollDiv).fadeIn("slow")
-			});
-			$(this).click(function() {
-				$("html, body").animate({scrollTop: 0}, "slow")
-			})
-		}
-	});
-	$(function() {
-		$("#Go_Top").scrollToTop();
-	});
-</script>
 <div class="goTopArea">
 	<a href='#' id='Go_Top' class="goTop"></a>
 </div>
