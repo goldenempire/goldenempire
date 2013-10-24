@@ -1,0 +1,16 @@
+CREATE TABLE cats (
+		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		logo VARCHAR(200), /* "img/index-cat.jpg" */
+		name VARCHAR(100), /* "Diamond-Pro Katalina", */
+		breed VARCHAR(100), /* Порода "Британский к/ш, BRI", */
+		color VARCHAR(100), /* "Чёрный затушёванный пойнт", */
+		color_code VARCHAR(100), /* --"BRI ns 12 34", */
+		birth DATE, /* --"13.07.2009", */
+		father INT, 
+		mother INT,
+		sex VARCHAR(50), /* --"Female/Male/Child", */
+		type VARCHAR(50), /* --"cat/hat", */
+		state VARCHAR(100), /* --продается, etc */
+                created TIMESTAMP DEFAULT NOW(), /* --когда создана запись */
+                user_id INT NOT NULL /* --кто создал запись */
+        );
