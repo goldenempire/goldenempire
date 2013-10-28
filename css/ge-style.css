@@ -43,6 +43,7 @@ input[type="checkbox"]:focus {
 	-moz-outline-offset: -1px !important;
 	-moz-outline: 1px solid #000 !important;
 }
+
 /*placeholder color*/
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
