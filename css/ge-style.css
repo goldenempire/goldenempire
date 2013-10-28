@@ -213,7 +213,7 @@ ul.gEmMenuList {
 ul.gEmMenuList li {
 	float: left;
 }
-ul.gEmMenuList li a {
+ul.gEmMenuList li .gEmMenuListLink {
 	display: block;
 	width: 138px;
 	color: #696969;
@@ -227,16 +227,17 @@ ul.gEmMenuList li a {
 	text-shadow: 1px 1px 1px #ffffff;
 	border-right: solid 1px #d9d9d9;
 	border-left: solid 1px #ffffff;
+	cursor: pointer;
 }
-ul.gEmMenuList li a.firstChild {
+ul.gEmMenuList li .gEmMenuListLink.firstChild {
 	 border-left: none;
 }
-ul.gEmMenuList li a.lastChild {
+ul.gEmMenuList li .gEmMenuListLink.lastChild {
 	border-right: none;
 	width: 140px;
 }
-ul.gEmMenuList li a:hover,
-ul.gEmMenuList li a.active {
+ul.gEmMenuList li .gEmMenuListLink:hover,
+ul.gEmMenuList li .gEmMenuListLink.active {
 	background-image: url("../img/menu-bg-hover.png");
 	background-repeat: repeat-x;
 	color: #ff6f6f;
@@ -554,11 +555,13 @@ ul.gEmSidebarMenuList li {
 	background-repeat: no-repeat;
 	background-position: 0 0;
 }
-ul.gEmSidebarMenuList li a {
+ul.gEmSidebarMenuList li .gEmSidebarMenuListLink {
+	color:#248dc1;
 	text-decoration: none;
 	font-weight: bold;
+	cursor: pointer;
 }
-ul.gEmSidebarMenuList li a:hover {
+ul.gEmSidebarMenuList li .gEmSidebarMenuListLink:hover {
 	color: #696969;
 }
 ul.gEmSidebarMenuList li span {
