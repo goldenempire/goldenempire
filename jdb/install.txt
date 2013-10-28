@@ -12,5 +12,11 @@ CREATE TABLE cats (
 		type VARCHAR(50), /* --"cat/hat", */
 		state VARCHAR(100), /* --продается, etc */
                 created TIMESTAMP DEFAULT NOW(), /* --когда создана запись */
-                user_id INT NOT NULL /* --кто создал запись */
+                user VARCHAR(50) NOT NULL, /* --кто создал запись */
+                confirmed INT DEFAULT 0, /* --будет ли запись отображаться */
         );
+
+INSERT INTO
+    cats (logo, name, breed, color, color_code, birth, sex, type, )
+VALUES
+    ('Evgen', 26, 'Russia', 'Ryazan')

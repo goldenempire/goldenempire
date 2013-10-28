@@ -1,0 +1,91 @@
+.dropfiles {
+	width: 800px;
+	padding: 20px;
+	min-height: 200px;
+	border: 1px dashed #969696;
+	box-shadow: 0px 0px 100px #D8D8D8 inset;
+}
+
+.enter {
+	border: 1px dashed #969696;
+	box-shadow: 0px 0px 100px #4EA546 inset;
+}
+
+.file-preview {
+	position: relative;
+	display: inline-block;
+	padding: 10px;
+	width: 100px;
+	border: 1px solid #A2A2A2;
+	box-shadow: 0px 0px 8px #AAA;
+	margin: 5px;
+	background: white;
+	opacity: 0.3;
+}
+
+.file-preview.dz-processing {
+	opacity: 0.6;
+}
+
+.file-preview.dz-success {
+	opacity: 1;
+	cursor: pointer;
+}
+
+.file-preview.dz-success:hover {
+	background: #E4F5EB;
+	border: 1px solid #1F6818;
+	box-shadow: 0px 0px 8px #131313;
+}
+
+.file-filename {
+	font-size: 10px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.file-size {
+	width: 100%;
+	font-size: 10px;
+	color: green;
+}
+
+.file-thumbnail {
+	padding-top: 5px;
+	width: 100px;
+}
+
+.close {
+	color: white;
+	background: black;
+	display: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 15px;
+	position: absolute;
+	top: -8px;
+	left: 110px;
+}
+
+.close:hover {
+	background: #C22222;
+	box-shadow: 0px 0px 5px black;
+}
+
+.file-preview.dz-success:hover .close {
+	display: inline-block;
+}
+
+.file-progress {
+	height: 2px;
+	border-radius: 1px;
+	margin-top: 7px;
+	display: none;
+}
+
+.file-upload {
+	background: #66D64B;
+	height: 100%;
+	display: block;
+	border-radius: 1px;
+}

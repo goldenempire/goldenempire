@@ -43,34 +43,6 @@ input[type="checkbox"]:focus {
 	-moz-outline-offset: -1px !important;
 	-moz-outline: 1px solid #000 !important;
 }
-
-/*placeholder color*/
-input::-webkit-input-placeholder,
-textarea::-webkit-input-placeholder {
-	color: #888888;
-}
-input::-moz-placeholder,
-textarea::-moz-placeholder {
-	color: #888888;
-}
-input:-ms-input-placeholder,
-textarea:-ms-input-placeholder {
-	color: #888888;
-}
-
-/*focus placeholder color*/
-input:focus::-webkit-input-placeholder,
-textarea:focus::-webkit-input-placeholder {
-	color: #ffffff;
-}
-input:focus::-moz-placeholder,
-textarea:focus::-moz-placeholder {
-	color: #ffffff;
-}
-input:focus:-ms-input-placeholder,
-textarea:focus:-ms-input-placeholder {
-	color: #ffffff;
-}
 html, body {
 	margin: 0;
 	padding: 0;
@@ -599,57 +571,6 @@ ul.gEmSidebarMenuList li span.sale {
 	font-weight: bold;
 	margin: 0 0 8px 0;
 }
-.gEmLogin {
-	background-image: url("../img/white-bg-60.png");
-	margin: 20px 0 0 0;
-}
-.gEmLoginHeader {
-	width: 280px;
-	height: 40px;
-	background-image: url("../img/golden-empire-icons-40x40px.png");
-	background-repeat: no-repeat;
-	background-position: 0 -640px;
-}
-.gEmLoginTitle {
-	font-size: 14px;
-	line-height: 14px;
-	font-weight: bold;
-	color: #999999;
-	text-transform: uppercase;
-	padding: 13px 0 0 40px;
-}
-.gEmLoginBody {
-	padding: 0 10px 5px 40px;
-}
-.gEmLoginField {
-	display: block;
-	width: 200px;
-	height: 22px;
-	border: solid 1px #999999;
-	padding: 1px 5px;
-	margin: 0 0 10px 0;
-	font-family: 'Roboto', Arial, Helvetica, sans-serif;
-	font-size:12px;
-	color: #666666;
-}
-.gEmLoginButton {
-	border: none;
-	height: 30px;
-	padding: 0 10px;
-	margin: 0 0 7px 0;
-	background-color: #999999;
-	color: #ffffff;
-	font-family: 'Roboto', Arial, Helvetica, sans-serif;
-	font-size: 13px;
-	cursor: pointer;
-}
-.gEmLoginButton:hover {
-	background-color: #666666;
-}
-.gEmLoginHint {
-	color: #e63a3a;
-	padding: 0 0 0 10px;
-}
 
 /*breadcrumbs*/
 .gEmBreadcrumbsBox {
@@ -702,4 +623,8 @@ a.goTop {
 a:hover.goTop {
 	background-color: #ff6f6f;
 	background-position: 0 -120px;
+}
+
+div.hiddenTemplate {
+    display: none
 }
