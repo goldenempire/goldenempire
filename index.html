@@ -31,7 +31,7 @@
 				<li><a href="kittens-friends-list.html" class="lastChild">Котята друзей</a></li>
 			</ul>
 		</div>
-        <div class="gEmSection aboutPage">
+		<div class="gEmSection aboutPage">
 			<div class="gEmSectionLeft">
 				<div class="gEmSidebarMenu">
 					<div class="gEmSidebarMenuItem">
@@ -58,29 +58,32 @@
 					</div>
 				</div>
 				<div class="gEmSidebarContacts">
-
 					<div class="gEmSidebarContactsHeader">
 						<div class="gEmSidebarContactsTitle">Контактная информация</div>
 					</div>
 					<div class="gEmSidebarContactsBody">
-                        <p class="compTitle">GoldenEmpire Cattery</p>
+						<p class="compTitle">GoldenEmpire Cattery</p>
 						<p>Kiev, Ukraine</p>
 						<p>E-mail: <a href="mailto:catinhat@ukr.net">catinhat@ukr.net</a></p>
 						<p>Phone: +380997408880</p>
 						<p>Skype: Tatyana Burbeza</p>
 					</div>
-                    <div class="gEmSidebarContactsHeader">
-                        <div class="gEmSidebarContactsTitle" id="logged_as">Вход на сайт</div>
-                    </div>
-                    <div id="login_box">
-                        <input type="text" id="user_name"/>
-                        <input type="password" id="user_pass"/><br>
-                        <input type="button" id="enter_button" value="Войти"/><span id="login_hint"></span>
-                    </div>
-                    <div style="display: none;">
-                        <input type="button" id="exit_button" value="Выйти"/>
-                        <input type="button" id="admin_button" value="Админка"/>
-                    </div>
+				</div>
+				<div class="gEmLogin">
+					<div class="gEmLoginHeader">
+						<div class="gEmLoginTitle" id="logged_as">Вход на сайт</div>
+					</div>
+					<div class="gEmLoginBody">
+						<div id="login_box">
+							<input type="text" id="user_name" class="gEmLoginField" placeholder="Логин"/>
+							<input type="password" id="user_pass" class="gEmLoginField" placeholder="Пароль" />
+							<input type="button" id="enter_button" value="Войти" class="gEmLoginButton"/><span id="login_hint" class="gEmLoginHint"></span>
+						</div>
+						<div style="display: none;">
+							<input type="button" id="exit_button" value="Выйти"/>
+							<input type="button" id="admin_button" value="Админка"/>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="gEmSectionRight pageContent">
