@@ -108,10 +108,10 @@ $(document).ready(function () {
         $(this).toggleClass('active', 200);
     });
     // верхнее меню
-    proccessTopMenu();
+    //proccessTopMenu();
 
     // авторизация пользователя
-    processLogin();
+    //processLogin();
 });
 
 function topMenuItemClick(self){
@@ -219,6 +219,7 @@ $(function() {
 });
 
 // dropzone
+/*
 $(function() {
 
     $('#upload_all').click(function(){
@@ -292,3 +293,4 @@ $(function() {
     });
 
 });
+*/
