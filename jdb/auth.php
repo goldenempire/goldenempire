@@ -1,5 +1,7 @@
 <?php
 
+include 'db_auth.php';
+
 session_start();
 
 if(!isset($_SESSION['logged'])){
@@ -137,12 +139,18 @@ function logout(){
     return JSON_stringify(array('result'=>'default'));
 }
 
+function check_logged(){
+    if(1!=$_SESSION['logged']){
+        throw new Exception("Авторизируйтесь");
+    }
+}
+
+
+
 function getAll(){
     $r = array();
     try {
-        if(1!=$_SESSION['logged']){
-            throw new Exception("Авторизируйтесь");
-        }
+        check_logged();
 
         $con=mysqli_connect("mysql.hostinger.com.ua","u861993091_dsp","u861993091_pwd","u861993091_cats");
         // Check connection
