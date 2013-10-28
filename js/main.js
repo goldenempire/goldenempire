@@ -108,21 +108,23 @@ $(document).ready(function () {
         $(this).toggleClass('active', 200);
     });
     // верхнее меню
-    //proccessTopMenu();
+    topMenuItemClick();
 
     // авторизация пользователя
     //processLogin();
 });
 
-function topMenuItemClick(self){
-    $('.gEmMenuList li a').each(function () {
-        $(this).removeClass("active");
+function topMenuItemClick(){
+    $('.gEmMenuList li a').click(function () {
+        $('.gEmMenuList li a').each(function () {
+            $(this).removeClass("active");
+        });
+        $(this).addClass("active");
     });
-    self.addClass("active");
 
-    $('#pageSales').click(function(){
+    /*$('#pageSales').click(function(){
 
-    });
+    });*/
 }
 
 function processLogin(){
