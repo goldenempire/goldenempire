@@ -1,73 +1,46 @@
 ﻿<?php
 
-include 'jdb/auth.php';
+include './../jdb/db.php';
 
-function test(){
-
-    $r = false;
-    try {
-        $arr = array (
-            array (
-                "foo" => "bar",
-                42    => 24,
-                "multi" => array(
-                    "dimensional" => array(
-                        "array" => "foo"
-                    )
-                )
-            )
-        );
-
-        $s = JSON_stringify($arr);
-        if(false == $s){
-            return false;
-        }
-
-        $fp = fopen('jdb/test.json', 'w');
-        fwrite($fp, $s);
-        fclose($fp);
-    } catch(Exception $e) {
-
+function JSON_parse($s){
+    $r=json_decode($s,TRUE);
+    if(JSON_ERROR_NONE==json_last_error()){
+        return $r;
     }
 
-    return $r;
-    //return JSON_stringify( auth('admin','admin') );
+    throw new Exception('Не удалось распарсить JSON: '.json_last_error());
 }
 
-function get(){
-
-    $r = array();
-    try {
-
-        $s = file_get_contents("jdb/cats.json");
-        $j = JSON_parse($s);
-        if(false==$j){
-            return false;
-        }
-
-        $r['result'] = $j;
-    } catch(Exception $e) {
-        $r['error'] = $e;
+function JSON_stringify($j){
+    $r=json_encode($j);
+    if(JSON_ERROR_NONE==json_last_error()){
+        return $r;
     }
 
-    return JSON_stringify($r);
+    throw new Exception('Не удалось преобразовать строку в JSON: '.json_last_error());
 }
 
 //var_dump($_POST);
 //echo JSON_stringify($_POST);
-if('get'==$_POST['action']){
-    echo get();
-    //echo JSON_stringify({ a: 'b' });
-} else if('update'==$_POST['action']) {
-    echo update($_POST);
-} else if('test'==$_POST['action']) {
-    echo test();
-} else if('login'==$_POST['action']) {
-    echo login($_POST['user_name'], $_POST['user_pass']);
-} else if('logout'==$_POST['action']) {
-    echo logout();
-} else {
-    echo false;
+
+try {
+    if('get_one'==$_POST['action']){
+        echo JSON_stringify( db_get_one($_POST['item_id']) );
+    } else if('get_list'==$_POST['action']) {
+        echo JSON_stringify( db_get_list($_POST['category']) );
+    } else if('get_list'==$_POST['action']) {
+        echo JSON_stringify( db_get_category($_POST['list_name']) );
+    } else if('update'==$_POST['action']) {
+        echo JSON_stringify( update($_POST) );
+    } else if('login'==$_POST['action']) {
+        echo JSON_stringify( login($_POST['user_name'], $_POST['user_pass']) );
+    } else if('logout'==$_POST['action']) {
+        echo JSON_stringify( logout() );
+    } else {
+        throw new Exception("Не известная операция".$_POST['action']);
+    }
+} catch(Exception $e) {
+    json_encode(array('error'=>$e));
 }
 
 ?>

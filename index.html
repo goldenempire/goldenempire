@@ -9,6 +9,7 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic&subset=latin,cyrillic-ext,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
+    <!--script src="http://stevenlevithan.com/assets/misc/date.format.js"></script-->
     <script type="text/javascript" src="js/jquery.mousewheel-3.0.6.pack.js"></script>
     <script type="text/javascript" src="fancybox/jquery.fancybox.js"></script>
     <script type="text/javascript" src="fancybox/jquery.fancybox.pack.js"></script>
@@ -23,15 +24,13 @@
 </div>
 <div class="gEmMenu">
     <ul class="gEmMenuList">
-	    <ul class="gEmMenuList">
-		    <li><span class="gEmMenuListLink firstChild">О питомнике</span></li>
-		    <li><span class="gEmMenuListLink">Акции</span></li>
-		    <li><span class="gEmMenuListLink">Шляпки</span></li>
-		    <li><span class="gEmMenuListLink">Наши коты</span></li>
-		    <li><span class="gEmMenuListLink">Наши кошки</span></li>
-		    <li><span class="gEmMenuListLink">Котята</span></li>
-		    <li><span class="gEmMenuListLink lastChild">Котята друзей</span></li>
-	    </ul>
+        <li><span page="pageAbout" class="gEmMenuListLink firstChild">О питомнике</span></li>
+        <li><span page="pageList" category="акции" class="gEmMenuListLink">Акции</span></li>
+        <li><span page="pageList" category="шляпки" class="gEmMenuListLink">Шляпки</span></li>
+        <li><span page="pageList" category="коты" class="gEmMenuListLink">Наши коты</span></li>
+        <li><span page="pageList" category="кошки" class="gEmMenuListLink">Наши кошки</span></li>
+        <li><span page="pageList" category="котята" class="gEmMenuListLink active">Котята</span></li>
+        <li><span page="pageList" category="котята друзей" class="gEmMenuListLink lastChild">Котята друзей</span></li>
     </ul>
 </div>
 <div class="gEmSection catsMalePage">
@@ -90,20 +89,20 @@
 	</div>
 </div>
 <div class="gEmSectionRight">
-    <div id="pageSingle">
-    <div class="gEmBreadcrumbsBox">Наши коты / Сheese cake snezhny bars</div>
+    <div class="hiddenTemplate" id="pageSingle">
+    <!--div class="gEmBreadcrumbsBox">Наши коты / Сheese cake snezhny bars</div-->
     <div class="gEmIndexItemBox">
-        <h2 class="pageSingleTitle">Сheese cake snezhny bars</h2>
+        <h2 class="pageSingleTitle" id='db_name_text'>Сheese cake snezhny bars</h2>
         <div class="gEmIndexItemImg">
-            <img src="img/index-cat-empty-big_256x200px.jpg" />
+            <img src="img/index-cat-empty-big_256x200px.jpg" id='db_logo_src'/>
         </div>
         <div class="gEmIndexItemDesc">
-            <p><strong>Порода:</strong> Британская к/ш, BRI</p>
-            <p><strong>Окрас:</strong> Чёрный затушёванный пойнт</p>
-            <p><strong>Дата рождения:</strong> 13.07.2010</p>
-            <p><strong>Отец:</strong> Diamond-Pro Grand Bear, BRI ns 11</p>
-            <p><strong>Мать:</strong> Diamond-Pro Katalina, BRI ns 12 3322</p>
-            <div class="gEmIndexPriceBox">2 500<span class="currency">Uah</span></div>
+            <p id='db_breed_text'><strong>Порода:</strong> <span>Британская к/ш, BRI</span></p>
+            <p id='db_color_text'><strong>Окрас:</strong> <span>Чёрный затушёванный пойнт</span></p>
+            <p id='db_birth_text'><strong>Дата рождения:</strong> <span>11.11.2011</span></p>
+            <p id='db_father_text'><strong>Отец:</strong> <span>Diamond-Pro Grand Bear, BRI ns 11</span></p>
+            <p id='db_mother_text'><strong>Мать:</strong> <span>Diamond-Pro Katalina, BRI ns 12 3322</span></p>
+            <p id='db_state_text'><div class="gEmIndexPriceBox">2 500</div></p>
         </div>
         <div class="gEmButtonsBox">
             <a href="#" class="gEmPhoto">Фотогалерея</a>
@@ -119,7 +118,7 @@
             <tr>
                 <td rowspan="4">
                     <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
+                        <a class="gEmPedigreeTableItemImg">
                             <img src="img/index-cat-empty.png" />
                         </a>
                         <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
@@ -128,7 +127,7 @@
                 <!--<td rowspan="8" class="gEmPedigreeTableSeparator">2</td>-->
                 <td rowspan="2">
                     <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
+                        <a class="gEmPedigreeTableItemImg">
                             <img src="img/index-cat-empty.png" />
                         </a>
                         <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
@@ -308,19 +307,19 @@
     </div>
     </div>
     <div class="hiddenTemplate" id="pageList">
-        <div class="gEmBreadcrumbsBox">Наши коты</div>
+        <!--div class="gEmBreadcrumbsBox">Наши коты</div-->
         <div class="gEmIndexItemBox">
             <a href="cats-m-item.html" class="gEmIndexItemImg">
-                <img src="img/index-cat-empty-big_256x200px.jpg" />
+                <img src="img/index-cat-empty-big_256x200px.jpg" id='db_logo_src' />
             </a>
             <div class="gEmIndexItemDesc">
-                <h2><a href="cats-m-item.html" id="text_name">Сheese cake snezhny bars</a></h2>
-                <p id='testst'><strong>Порода:</strong> <span id="text_breed">Британская к/ш, BRI</span></p>
-                <p><strong>Окрас:</strong> <span id="text_color">Чёрный затушёванный пойнт</span></p>
-                <p><strong>Дата рождения:</strong> <span id="text_birth">13.07.2009</span></p>
-                <p><strong>Отец:</strong> <span id="cat_link_father">Diamond-Pro Grand Bear, BRI ns 11</span></p>
-                <p><strong>Мать:</strong> <span id="cat_link_mother">Diamond-Pro Katalina, BRI ns 12 33</span></p>
-                <div class="gEmIndexPriceBox">2 500<span class="currency">Uah</span></div>
+                <h2><a id="db_name_text">Сheese cake snezhny bars</a></h2>
+                <p id='db_breed_text'><strong>Порода:</strong> <span>Британская к/ш, BRI</span></p>
+                <p id='db_color_text'><strong>Окрас:</strong> <span>Чёрный затушёванный пойнт</span></p>
+                <p id='db_birth_text'><strong>Дата рождения:</strong> <span>13.07.2009</span></p>
+                <p id='db_father_text'><strong>Отец:</strong> <span id="cat_link_father">Diamond-Pro Grand Bear, BRI ns 11</span></p>
+                <p id='db_mother_text'><strong>Мать:</strong> <span id="cat_link_mother">Diamond-Pro Katalina, BRI ns 12 33</span></p>
+                <p id='db_state_text'><div class="gEmIndexPriceBox">2 500</div></p>
             </div>
             <div class="gEmButtonsBox">
                 <a href="#" class="gEmPhoto">Фотогалерея</a>
@@ -370,6 +369,9 @@
         <img src="img/about-cat-03.jpg" class="alignCenterImg">
         <p>Ответственно отнеситесь к выбору питомца. За каждым истинно породистым  котенком стоит многолетний труд целой армии профессиональных заводчиков из разных стран , которые из поколения в поколение  получали, закрепляли такое невинное детское выражение личика Вашего котенка, такой необыкновенный окрас, такую бархатистую или шелковистую шерстку, такой покладистый и доверчивый характер...</p>
         <img src="img/about-cat-04.jpg" class="alignCenterImg">
+    </div>
+    <div id="pageDisplay">
+        Wellcome!
     </div>
 </div>
 <div class="gEmFooter">

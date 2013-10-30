@@ -14,21 +14,123 @@ var translate_db_field = {
     state: "Статус"
 };
 
-var db = {
+var main = {
+	fill_page : function(tag, item){
+		for(var db_field_name in item){
+			$("[id^='db_"+db_field_name+"']", tag).each(function(){
+				var pageItem = $(this);
+				if(!item[db_field_name]){
+					pageItem.hide();
+				} else {
+					if(-1!=pageItem.attr('id').indexOf('_text')){
+						if($('span',pageItem).length){
+							$('span',pageItem).text( item[db_field_name] );
+						} else {
+							pageItem.text( item[db_field_name] );
+						}
+					} else if(-1!=pageItem.attr('id').indexOf('_src')){
+						pageItem.attr('src', item[db_field_name]);
+					}
+				}
+			});
+		}
+	},
+	get_one : function(item_id){
+		var self = this;
+		self.post({ 'action': 'get_one', 'item_id': item_id }, function(item){
+			// сюда не прийдем если ошибка
+
+			//todo del
+			//console.log(item);
+
+			var father = item.father;
+			var mother = item.mother;
+			if(item.father){
+				item.father = item.father.name;
+			}
+			if(item.mother){
+				item.mother = item.mother.name;
+			}
+			//item.birth = item.birth.format('dd.mm.yyyy');
+
+			var pageSingle = $('#pageSingle').clone();
+			pageSingle.removeClass('hiddenTemplate');
+			pageSingle.attr('id', 'pageDisplay');
+
+			self.fill_page(pageSingle, item);
+
+			var parent = $('#pageDisplay').parent();
+			$('#pageDisplay').remove();
+			pageSingle.appendTo(parent);
+
+			$('[id*="father"]', pageSingle).click(function(){
+				self.get_one(father.id);
+			});
+			$('[id*="mother"]', pageSingle).click(function(){
+				self.get_one(mother.id);
+			});
+
+			// заполняем родословную
+			//console.log( $('.gEmPedigreeTable [rowspan=4]', pageSingle));
+			var fatherTag = $('.gEmPedigreeTable [rowspan=4]:eq(0)', pageSingle);
+			fatherTag.find('.gEmPedigreeTableItemDesc').text( father.name+', '+father.breed );
+			fatherTag.find('img').attr('src', father.logo);
+			fatherTag.click(function(){
+				var aTag = $('.gEmMenu');
+				$('html, body').animate({scrollTop: aTag.offset().top},'slow');
+				self.get_one(father.id);
+			});
+
+			var motherTag = $('.gEmPedigreeTable [rowspan=4]:eq(1)', pageSingle);
+			motherTag.find('.gEmPedigreeTableItemDesc').text( mother.name+', '+mother.breed );
+			motherTag.find('img').attr('src', mother.logo);
+			motherTag.click(function(){
+				var aTag = $('.gEmMenu');
+				$('html, body').animate({scrollTop: aTag.offset().top},'slow');
+				self.get_one(mother.id);
+			});
+
+			//console.log( fatherTag, motherTag);
+
+			// todo
+			// заполнять галерею
+		});
+	},
+	get_list : function(category){
+		var self = this;
+		self.post({ 'action': 'get_list', 'category': category }, function(items){
+			console.log(items);
+
+			var pageList = $('#pageList').clone();
+
+			//console.log(pageList);
+			var tagListItemTemplate = $('.gEmIndexItemBox', pageList).clone();
+			var tagListSeparatorTemplate = $('.pageIndexSeparator', pageList).clone();
+			pageList.empty();
+
+			for(var i in items){
+				var tagListItem = tagListItemTemplate.clone();
+				self.fill_page(tagListItem, items[i]);
+				tagListItem.appendTo(pageList);
+
+				if(i!=items.length-1){
+					var tagListSeparator = tagListSeparatorTemplate.clone();
+					tagListSeparator.appendTo(pageList);
+				}
+			}
+
+			var parent = $('#pageDisplay').parent();
+			$('#pageDisplay').remove();
+			pageList.removeClass('hiddenTemplate');
+			pageList.attr('id', 'pageDisplay');
+			pageList.appendTo(parent);
+		});
+	},
     update : function(arr, cb){
         this.post({ action: "update", data: arr }, cb);
     },
-    get : function(cb){
-        this.post({ action: "get" }, cb);
-    },
     getAll : function(cb){
         this.post({ action: "getAll" }, cb);
-    },
-    getTest : function(cb){
-        this.post({ action: "getTest" }, cb);
-    },
-    test : function(cb){
-        this.post({ action: "test" }, cb);
     },
     login : function(user_name, user_pass, cb){
         this.post({ 'user_name' : user_name, 'user_pass' : user_pass, action: "login" }, cb);
@@ -38,27 +140,27 @@ var db = {
     },
     post : function(rq_data, cb){
         $.ajax({
-            url:"php/db.php",
+            url:"php/router.php",
             type: "POST",
             data: rq_data,
             dataType:"json",
             success: function(rs_data){
-                console.log('post success', rs_data);
                 if(rs_data.error){
-                    cb(rs_data.error);
+					console.log(rs_data.error);
                 } else {
-                    cb(null, rs_data.result);
+                    cb(rs_data);
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log('post error', xhr.responseText, xhr, ajaxOptions, thrownError);
-                if(cb) cb(xhr.status);
             }
         });
     }
 };
 
 $(document).ready(function () {
+
+	main.get_one(3);
 
     /*
     db.get(function(e,o){
@@ -115,16 +217,20 @@ $(document).ready(function () {
 });
 
 function topMenuItemClick(){
-    $('.gEmMenuList li a').click(function () {
-        $('.gEmMenuList li a').each(function () {
-            $(this).removeClass("active");
+    $('.gEmMenuList li span').click(function () {
+        $('.gEmMenuList li span').each(function () {
+			$(this).removeClass("active");
         });
         $(this).addClass("active");
+
+		$('.gEmSectionRight [id^=page]').removeClass('hiddenTemplate');
+		$('.gEmSectionRight [id^=page]').addClass('hiddenTemplate');
+		if('pageAbout'==$(this).attr('page')){
+			$('#pageAbout').removeClass('hiddenTemplate');
+		} else if('pageList'==$(this).attr('page')){
+			main.get_list( $(this).attr('category') );
+		}
     });
-
-    /*$('#pageSales').click(function(){
-
-    });*/
 }
 
 function processLogin(){

@@ -32,10 +32,10 @@
             if(db_table_empty('users')){
                 $con = db_connect();
 
-                $sql_insert="INSERT INTO users (id,login,password,email,enabled) VALUES ";
-                $sql_insert.="  (1,'admin','nimda','despotix@gmail.com',1)";
-                $sql_insert.=", (2, 'ybandura','ybandura1','y.bandura@gmail.com',1)";
-                $sql_insert.=", (3, 'burbeza','djdfcbr','realhouse97@gmail.com',1)";
+                $sql_insert="INSERT INTO users (id,login,password,email,enabled,name) VALUES ";
+                $sql_insert.="  (1,'admin','nimda','despotix@gmail.com',1,'Администратор')";
+                $sql_insert.=", (2, 'ybandura','ybandura1','y.bandura@gmail.com',1,'Бандура Ярослав')";
+                $sql_insert.=", (3, 'burbeza','djdfcbr','realhouse97@gmail.com',1,'Бурбеза Татьяна')";
                 if(!$con->query($sql_insert)) {
                     return "Error creating users: " . mysqli_error($con);
                 }
@@ -77,16 +77,16 @@
                 $con = db_connect();
 
                 $sql_insert="INSERT INTO items ";
-                $sql_insert.="  (id, logo            ,            name, breed           ,                         color, color_code,        birth, father, mother,       litter,      sex, type,    category,     user, confirmed) VALUES ";
-                $sql_insert.="  ( 1, 'img/father1.jpg', 'Father Cat#1', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 11', '13.07.2009',   null,   null,         null,   'male', 'cat',     'коты',        1,         1)";
-                $sql_insert.=", ( 2, 'img/mother1.jpg', 'Mother Cat#1', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 12', '13.07.2009',   null,   null,         null, 'female', 'cat',    'кошки',        1,         1)";
-                $sql_insert.=", ( 3, 'img/child1.jpg',   'Child Cat#1', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 13', '13.07.2013',      1,      2,   'litter#1', 'female', 'cat',   'котята',        1,         1)";
-                $sql_insert.=", ( 4, 'img/child2.jpg',   'Child Cat#2', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 14', '13.07.2013',      1,      2,   'litter#1', 'female', 'cat',   'котята',        1,         1)";
+                $sql_insert.="  (id, logo            ,            name, breed           ,                         color, color_code,        birth, father, mother,       litter,      sex, type,    category,     user, confirmed, state) VALUES ";
+                $sql_insert.="  ( 1, 'img/father1.jpg', 'Father Cat#1', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 11', '2009-07-10',   null,   null,         null,   'male', 'cat',     'коты',        1,         1, null )";
+                $sql_insert.=", ( 2, 'img/mother1.jpg', 'Mother Cat#1', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 12', '2009-07-11',   null,   null,         null, 'female', 'cat',    'кошки',        1,         1, null )";
+                $sql_insert.=", ( 3, 'img/child1.jpg',   'Child Cat#1', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 13', '2013-07-12',      1,      2,   'litter#1', 'female', 'cat',   'котята',        1,         1, 2500 )";
+                $sql_insert.=", ( 4, 'img/child2.jpg',   'Child Cat#2', 'Британская к/ш',   'Черный затушеванный пойнт', 'ny 10 14', '2013-07-13',      1,      2,   'litter#1', 'female', 'cat',   'котята',        1,         1, null )";
 
-                $sql_insert.=", ( 5, 'img/father2.jpg', 'Father Cat#2', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 21', '13.07.2010',   null,   null,         null,   'male', 'cat',     'коты',        1,         1)";
-                $sql_insert.=", ( 6, 'img/mother2.jpg', 'Mother Cat#2', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 22', '13.07.2010',   null,   null,         null, 'female', 'cat',    'кошки',        1,         1)";
-                $sql_insert.=", ( 7, 'img/child1.jpg',   'Child Cat#3', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 23', '13.07.2012',      5,      6,   'litter#2',   'male', 'cat',   'котята',        1,         1)";
-                $sql_insert.=", ( 8, 'img/child2.jpg',   'Child Cat#4', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 24', '13.07.2012',      5,      6,   'litter#2', 'female', 'cat',   'котята',        1,         1)";
+                $sql_insert.=", ( 5, 'img/father2.jpg', 'Father Cat#2', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 21', '2010-07-14',   null,   null,         null,   'male', 'cat',     'коты',        1,         1, null )";
+                $sql_insert.=", ( 6, 'img/mother2.jpg', 'Mother Cat#2', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 22', '2010-07-15',   null,   null,         null, 'female', 'cat',    'кошки',        1,         1, null )";
+                $sql_insert.=", ( 7, 'img/child3.jpg',   'Child Cat#3', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 23', '2012-07-16',      5,      6,   'litter#2',   'male', 'cat',   'котята',        1,         1, null )";
+                $sql_insert.=", ( 8, 'img/child4.jpg',   'Child Cat#4', 'Шотландский к/ш', 'Cеребристая шиншилла пойнт', 'ny 10 24', '2012-07-17',      5,      6,   'litter#2', 'female', 'cat',   'котята',        1,         1, null )";
                 if(!$con->query($sql_insert)) {
                     return "Error creating items: " . mysqli_error($con);
                 }
