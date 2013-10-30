@@ -15,11 +15,13 @@ function db_get_one($item_id){
     $r = $result->fetch_assoc();
 
     if($r['father']){
-        $r['father'] = $con->query('select * from items where id='.$r['father'])->fetch_assoc();
+        $r1 = $con->query('select * from items where id='.$r['father']);
+        $r['father'] = $r1->fetch_assoc();
     }
 
     if($r['mother']){
-        $r['mother'] = $con->query('select * from items where id='.$r['mother'])->fetch_assoc();
+        $r2 = $con->query('select * from items where id='.$r['mother']);
+        $r['mother'] = $r2->fetch_assoc();
     }
 
     $con->close();
@@ -32,7 +34,19 @@ function db_get_list($item_category){
     $result = $con->query($sql);
     $r = array();
     while ($row = $result->fetch_assoc()) {
-        $r[] = $row;
+        $r1 = $row;
+
+        if($r1['father']){
+            $r2 = $con->query('select * from items where id='.$r1['father']);
+            $r1['father'] = $r2->fetch_assoc();
+        }
+
+        if($r1['mother']){
+            $r3 = $con->query('select * from items where id='.$r1['mother']);
+            $r1['mother'] = $r3->fetch_assoc();
+        }
+
+        $r[] = $r1;
     }
 
     $con->close();
@@ -83,7 +97,7 @@ function login($user_name, $user_pass){
     $con = db_connect();
     $sql = "select * from users where name='$user_name' and password='$user_pass'";
     $result = $con->query($sql);
-    $user_data = $result->fetch_assoc()[0];
+    $user_data = $result->fetch_assoc();
     $con->close();
 
     if(1==$user_data['enabled']){

@@ -15,7 +15,22 @@ var translate_db_field = {
 };
 
 var main = {
-	fill_page : function(tag, item){
+	scroll : function(){
+		var aTag = $('.gEmMenu');
+		$('html, body').animate({scrollTop: aTag.offset().top},'slow');
+	},
+	fill_page : function(tag, in_item){
+		var self = this;
+		var item = jQuery.extend(true, {}, in_item);
+		var father = item.father;
+		var mother = item.mother;
+		if(item.father){
+			item.father = item.father.name;
+		}
+		if(item.mother){
+			item.mother = item.mother.name;
+		}
+
 		for(var db_field_name in item){
 			$("[id^='db_"+db_field_name+"']", tag).each(function(){
 				var pageItem = $(this);
@@ -34,24 +49,25 @@ var main = {
 				}
 			});
 		}
+
+		$('[id*="father"]', tag).click(function(){
+			self.get_one(father.id);
+		});
+		$('[id*="mother"]', tag).click(function(){
+			self.get_one(mother.id);
+		});
+
+		// todo not 2 click when single
+		$('#db_logo_src', tag).click(function(){
+			self.get_one(item.id);
+		});
 	},
 	get_one : function(item_id){
 		var self = this;
 		self.post({ 'action': 'get_one', 'item_id': item_id }, function(item){
 			// сюда не прийдем если ошибка
 
-			//todo del
-			//console.log(item);
-
-			var father = item.father;
-			var mother = item.mother;
-			if(item.father){
-				item.father = item.father.name;
-			}
-			if(item.mother){
-				item.mother = item.mother.name;
-			}
-			//item.birth = item.birth.format('dd.mm.yyyy');
+			self.scroll();
 
 			var pageSingle = $('#pageSingle').clone();
 			pageSingle.removeClass('hiddenTemplate');
@@ -63,34 +79,47 @@ var main = {
 			$('#pageDisplay').remove();
 			pageSingle.appendTo(parent);
 
-			$('[id*="father"]', pageSingle).click(function(){
-				self.get_one(father.id);
-			});
-			$('[id*="mother"]', pageSingle).click(function(){
-				self.get_one(mother.id);
-			});
-
 			// заполняем родословную
 			//console.log( $('.gEmPedigreeTable [rowspan=4]', pageSingle));
 			var fatherTag = $('.gEmPedigreeTable [rowspan=4]:eq(0)', pageSingle);
-			fatherTag.find('.gEmPedigreeTableItemDesc').text( father.name+', '+father.breed );
-			fatherTag.find('img').attr('src', father.logo);
+			if(item.father) {
+				fatherTag.find('.gEmPedigreeTableItemDesc').text( item.father.name+', '+item.father.breed );
+				fatherTag.find('img').attr('src', item.father.logo);
+			}
 			fatherTag.click(function(){
-				var aTag = $('.gEmMenu');
-				$('html, body').animate({scrollTop: aTag.offset().top},'slow');
-				self.get_one(father.id);
+				self.get_one(item.father.id);
 			});
 
 			var motherTag = $('.gEmPedigreeTable [rowspan=4]:eq(1)', pageSingle);
-			motherTag.find('.gEmPedigreeTableItemDesc').text( mother.name+', '+mother.breed );
-			motherTag.find('img').attr('src', mother.logo);
+			if(item.mother) {
+				motherTag.find('.gEmPedigreeTableItemDesc').text( item.mother.name+', '+item.mother.breed );
+				motherTag.find('img').attr('src', item.mother.logo);
+			}
 			motherTag.click(function(){
-				var aTag = $('.gEmMenu');
-				$('html, body').animate({scrollTop: aTag.offset().top},'slow');
-				self.get_one(mother.id);
+				self.get_one(item.mother.id);
 			});
 
 			//console.log( fatherTag, motherTag);
+
+			$('.gEmMenuList li span').each(function () {
+				// todo улучшить
+				var menuTag = $(this);
+				$(this).removeClass("active");
+				//console.log('---', $(this).attr('category'), item.category, $(this).attr('category')==item.category);
+				if($(this).attr('category')==item.category){
+					$(this).addClass("active");
+					$('.gEmBreadcrumbsBox', pageSingle).empty();
+					$('<span></span>')
+						.text(menuTag.text())
+						.appendTo( $('.gEmBreadcrumbsBox', pageSingle) )
+						.click(function(){
+							//console.log('clicked!!!');
+							self.get_list( item.category );
+						});
+					$('<span></span>').text(' > '+item.name).appendTo( $('.gEmBreadcrumbsBox', pageSingle) );
+
+				}
+			});
 
 			// todo
 			// заполнять галерею
@@ -160,7 +189,10 @@ var main = {
 
 $(document).ready(function () {
 
-	main.get_one(3);
+	//main.get_one(3);
+	//console.log( $(location).attr('href') );
+	//console.log( $("[page^='pageAbout']") );
+	//$("[page^='pageAbout']").click();
 
     /*
     db.get(function(e,o){
@@ -231,6 +263,8 @@ function topMenuItemClick(){
 			main.get_list( $(this).attr('category') );
 		}
     });
+
+	$("[page^='pageAbout']").click();
 }
 
 function processLogin(){
