@@ -1,16 +1,15 @@
 <?php
-
+/*
     $db_host = 'mysql.hostinger.com.ua';
     $db_user = 'u861993091_dsp';
     $db_pwd = 'u861993091_pwd';
     $db_database = 'u861993091_cats';
-
-/*
+*/
     $db_host = 'localhost:3307';
     $db_user = 'root';
     $db_pwd = 'usbw';
     $db_database = 'cats';
-*/
+
 
     function db_mysql_connect(){
         global $db_host,$db_user,$db_pwd,$db_database;

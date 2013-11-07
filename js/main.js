@@ -174,6 +174,7 @@ var main = {
             data: rq_data,
             dataType:"json",
             success: function(rs_data){
+                //console.log(rq_data, arguments);
                 if(rs_data.error){
 					console.log(rs_data.error);
                 } else {
@@ -246,6 +247,12 @@ $(document).ready(function () {
 
     // авторизация пользователя
     //processLogin();
+
+    $('#enter_button').click(function(){
+        main.login($('#user_name').val(), $('#user_pass').val(), function(){
+            console.log('login result', arguments);
+        });
+    });
 });
 
 function topMenuItemClick(){

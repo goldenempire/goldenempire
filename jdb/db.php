@@ -95,17 +95,20 @@ function login($user_name, $user_pass){
     }
 
     $con = db_connect();
-    $sql = "select * from users where name='$user_name' and password='$user_pass'";
+    $sql = "select * from users where login='$user_name' and password='$user_pass'";
     $result = $con->query($sql);
     $user_data = $result->fetch_assoc();
-    $con->close();
+
 
     if(1==$user_data['enabled']){
         $_SESSION['id'] = $user_data['id'];
         $_SESSION['name'] = $user_data['name'];
     }
 
+    $con->close();
+
     return $user_data['name'];
+    //return $result->fetch_assoc();
 }
 
 function logout(){
