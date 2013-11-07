@@ -40,7 +40,8 @@ try {
         throw new Exception("Не известная операция".$_POST['action']);
     }
 } catch(Exception $e) {
-    json_encode(array('error'=>$e));
+    //json_encode(array('error'=>$e));
+    json_encode(array('error'=>$e->getMessage()));
 }
 
 ?>

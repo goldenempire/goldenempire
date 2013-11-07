@@ -76,11 +76,16 @@
 			<div class="gEmLoginTitle" id="logged_as">Вход на сайт</div>
 		</div>
 		<div class="gEmLoginBody">
+            <div id="greeting_box">
+                <span>Добро пожаловать:</span><br>
+                <span id="full_user_name">...</span>
+            </div>
 			<div id="login_box">
 				<input type="text" id="user_name" class="gEmLoginField" placeholder="Логин"/>
 				<input type="password" id="user_pass" class="gEmLoginField" placeholder="Пароль"/>
-				<input type="button" id="enter_button" value="Войти" class="gEmLoginButton"/><span id="login_hint" class="gEmLoginHint"></span>
+
 			</div>
+            <input type="button" id="enter_button" value="Войти" class="gEmLoginButton"/><span id="login_hint" class="gEmLoginHint"></span>
 			<div style="display: none;">
 				<input type="button" id="exit_button" value="Выйти"/>
 				<input type="button" id="admin_button" value="Админка"/>

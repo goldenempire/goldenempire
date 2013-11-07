@@ -15,6 +15,7 @@ var translate_db_field = {
 };
 
 var main = {
+    is_logged : true,
 	scroll : function(){
 		var aTag = $('.gEmMenu');
 		$('html, body').animate({scrollTop: aTag.offset().top},'slow');
@@ -161,11 +162,52 @@ var main = {
     getAll : function(cb){
         this.post({ action: "getAll" }, cb);
     },
-    login : function(user_name, user_pass, cb){
-        this.post({ 'user_name' : user_name, 'user_pass' : user_pass, action: "login" }, cb);
+    login : function(){
+        $('#login_hint').text('');
+        var self = this;
+        if(!self.is_logged){
+            var user_name = $('#user_name').val();
+            var user_pass = $('#user_pass').val();
+            if(!user_name || !user_pass){
+                var text = 'Введите логин';
+                if(!user_pass){
+                    text = 'Введите пароль';
+                }
+                $('#login_hint').text(text);
+            } else {
+                self.post({ 'user_name' : user_name, 'user_pass' : user_pass, action: "login" }, function(user_name, err){
+                    if(err){
+                        $('#login_hint').text(err);
+                    } else {
+                        //console.log('welcome ', user_name);
+                        $('#login_box').hide();
+                        $('#greeting_box').show();
+                        self.is_logged = true;
+                        self.user_name = user_name;
+                        $('#full_user_name').text(user_name);
+                        $('#enter_button').val('Выйти');
+                    }
+                });
+            }
+        } else {
+            self.logout();
+        }
     },
-    logout : function(cb){
-        this.post({ action: "logout" }, cb);
+    logout : function(){
+        $('#login_hint').text('');
+        $('#greeting_box').hide();
+        var self = this;
+        if(self.is_logged){
+            self.post({ action: "logout" }, function(data){
+                $('#login_box').show();
+                $('#greeting_box').hide();
+                self.is_logged = false;
+                $('#enter_button').val('Войти');
+                $('#user_pass').val('');
+                $('#full_user_name').text('...');
+
+            });
+        }
     },
     post : function(rq_data, cb){
         $.ajax({
@@ -174,9 +216,11 @@ var main = {
             data: rq_data,
             dataType:"json",
             success: function(rs_data){
-                //console.log(rq_data, arguments);
-                if(rs_data.error){
-					console.log(rs_data.error);
+                //console.log('rq_data',rq_data);
+                //console.log('rs_data',rs_data);
+                if((rs_data||{}).error){
+					console.log('rs_data.error', rs_data.error);
+                    cb(null, rs_data.error);
                 } else {
                     cb(rs_data);
                 }
@@ -189,6 +233,8 @@ var main = {
 };
 
 $(document).ready(function () {
+
+    main.logout();
 
 	//main.get_one(3);
 	//console.log( $(location).attr('href') );
@@ -249,9 +295,7 @@ $(document).ready(function () {
     //processLogin();
 
     $('#enter_button').click(function(){
-        main.login($('#user_name').val(), $('#user_pass').val(), function(){
-            console.log('login result', arguments);
-        });
+        main.login();
     });
 });
 

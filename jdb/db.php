@@ -97,8 +97,13 @@ function login($user_name, $user_pass){
     $con = db_connect();
     $sql = "select * from users where login='$user_name' and password='$user_pass'";
     $result = $con->query($sql);
-    $user_data = $result->fetch_assoc();
 
+    if(null==$result->num_rows){
+        //return $result;
+        return array('error'=>'Зарегистрируйтесь');
+        //throw new Exception('Пользователь не найден');
+    }
+    $user_data = $result->fetch_assoc();
 
     if(1==$user_data['enabled']){
         $_SESSION['id'] = $user_data['id'];
@@ -108,7 +113,7 @@ function login($user_name, $user_pass){
     $con->close();
 
     return $user_data['name'];
-    //return $result->fetch_assoc();
+    //return $result;
 }
 
 function logout(){
