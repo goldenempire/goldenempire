@@ -41,9 +41,12 @@ if(!is_logged()){
      //define('ROOT_DIR', dirname(__FILE__));
      //$upfile = ROOT_DIR . $db_upload_dir .$_FILES['uploadedfile']['name'];
      //echo $upfile;
+     //echo var_dump($_FILES);
+     //echo var_dump($_POST);
      //exit;
 
-     $b = move_uploaded_file($_FILES["uploadedfile"]["tmp_name"], $db_upload_dir.$_FILES['uploadedfile']['name']);
+     //$b = move_uploaded_file($_FILES["uploadedfile"]["tmp_name"], $db_upload_dir.$_FILES['uploadedfile']['name']);
+     $b = move_uploaded_file($_FILES["uploadedfile"]["tmp_name"], $db_upload_dir.$_POST["file_name"]);
      echo $b;
    } else {
       echo("!is_uploaded_file".JSON_stringify($_FILES["uploadedfile"]));

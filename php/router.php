@@ -36,8 +36,12 @@ try {
         echo JSON_stringify( login($_POST['user_name'], $_POST['user_pass']) );
     } else if('logout'==$_POST['action']) {
         echo JSON_stringify( logout() );
+    } else if('set_logo'==$_POST['action']) {
+        echo JSON_stringify( db_set_logo($_POST['id'], $_POST['file_name']) );
     } else if('insert'==$_POST['action']) {
+        $next_id = db_get_max_id();
         echo JSON_stringify( db_insert(
+            $next_id,
             $_POST['logo'],
             $_POST['name'],
             $_POST['breed'],
@@ -45,7 +49,7 @@ try {
             $_POST['color_code'],
             $_POST['birth'],
             $_POST['father'],
-             $_POST['mother'],
+            $_POST['mother'],
             $_POST['litter'],
             $_POST['sex'],
             $_POST['type'],

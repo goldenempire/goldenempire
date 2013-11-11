@@ -1,17 +1,18 @@
 <?php
-
+/*
     $db_host = 'mysql.hostinger.com.ua';
     $db_user = 'u861993091_dsp';
     $db_pwd = 'u861993091_pwd';
     $db_database = 'u861993091_cats';
     $db_upload_dir = '/home/u861993091/public_html/img/';
-/*
+*/
     $db_host = 'localhost:3307';
     $db_user = 'root';
     $db_pwd = 'usbw';
     $db_database = 'cats';
-    $db_upload_dir = 'D:\\work\\usb_server\\root\\goldenempire\\img\\';
-*/
+    //$db_upload_dir = 'D:\\work\\usb_server\\root\\goldenempire\\img\\';
+    $db_upload_dir = 'D:\\USBWebserver v8.6\\root\\goldenempire\\img\\';
+
     function db_mysql_connect(){
         global $db_host,$db_user,$db_pwd,$db_database;
 

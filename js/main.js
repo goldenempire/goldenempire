@@ -194,18 +194,27 @@ var main = {
             self.logout();
         }
     },
-    upload : function(cb){
+    upload : function(item_id, cb){
+        var self = this;
+
         var file_data = $("#upload_file_input").prop("files")[0];   // Getting the properties of file from file field
+
+        if(file_data.size>1*1024*1024){
+            alert('Изображение превышает 1мб');
+            return;
+        }
 
         console.log('file_data', file_data);
 
-        var form_data = new FormData();                  // Creating object of FormData class
-        form_data.append("file", file_data)              // Appending parameter named file with properties of file_field to form_data
-        //form_data.append("user_id", 123)                 // Adding extra parameters to form_data
+        var file_name = item_id+file_data.name.replace(/.*(\.\w+)$/, '$1');
 
-        var data = new FormData();
+        var form_data = new FormData();                  // Creating object of FormData class
+        form_data.append("uploadedfile", file_data);              // Appending parameter named file with properties of file_field to form_data
+        form_data.append("file_name", file_name);                 // Adding extra parameters to form_data
+
+        //var data = new FormData();
         //data.append('file',this.files[0]);
-        data.append('uploadedfile',file_data);
+        //data.append('uploadedfile',file_data);
         $.ajax({
             url: "php/upload.php",
             /*
@@ -217,24 +226,30 @@ var main = {
              */
             url: "php/upload.php",
             type: "POST",
-            data: data,
+            data: form_data,
             processData: false,
             contentType: false,
             success: function (data) {
                 console.log('uploaded ok!', data);
-                cb();
+                self.set_logo(item_id, 'img/'+file_name, cb)
             },
             error: function (data) {
-                alert(data.imageURL + "error");
+                console.log(data.imageURL + "error");
             }
         });
     },
+    set_logo : function(id, file_name, cb){
+        //var file_data = $("#upload_file_input").prop("files")[0];
+
+        this.post({ action: "set_logo", "file_name" : file_name, 'id' : id }, cb);
+    },
     insert : function(cb){
-        var file_data = $("#upload_file_input").prop("files")[0];
+        //var file_data = $("#upload_file_input").prop("files")[0];
 
         this.post({
             action: "insert",
-            logo : 'img/'+file_data.name,
+            //logo : 'img/'+file_data.name,
+            logo : '',
             name : $('#db_name').val(),
             breed : $('#db_breed').val(),
             color : $('#db_color').val(),
@@ -245,7 +260,8 @@ var main = {
             litter : $('#db_litter').val(),
             sex : $('#db_sex').val(),
             type : $('#db_type').val(),
-            category : $('#db_category').val(),
+            //category : $('#db_category').val(),
+            category : $('input[name=category]:checked', '#db_category').val(),
             state : $('#db_state').val()
         }, cb);
     },
@@ -294,7 +310,7 @@ var main = {
 
 $(document).ready(function () {
 
-    main.logout();
+    main.login();
 
 	//main.get_one(3);
 	//console.log( $(location).attr('href') );
@@ -370,8 +386,10 @@ $(document).ready(function () {
 
     //$('#ajax_add_file').click(function(){
     $('#db_add_row').click(function(){
-        main.upload(function(){
-            main.insert(function(){});
+        main.insert(function(item_id){
+            console.log('main.insert', arguments);
+            main.upload(item_id, function(){
+            });
         });
     });
 

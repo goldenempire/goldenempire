@@ -66,8 +66,38 @@ function db_get_owner(){
     return $r;
 }
 
+function db_get_max_id(){
+    if(!is_logged()){
+        throw new Exception('Эта операция требует авторизации');
+    }
+
+    $con = db_connect();
+
+    $rs = $con->query('select max(id) from items');
+    $id = 1+$rs->fetch_row()[0];
+
+    $con->close();
+
+    return $id;
+}
+
+function db_set_logo($id, $logo){
+    if(!is_logged()){
+        throw new Exception('Эта операция требует авторизации');
+    }
+
+    $con = db_connect();
+
+    $sql="update items set logo='".$logo."' where id=".$id;
+
+    $con->query($sql);
+
+    $con->close();
+    return $id;
+}
+
 function db_insert(
-    $logo, $name, $breed, $color,
+    $id, $logo, $name, $breed, $color,
     $color_code, $birth, $father, $mother,
     $litter, $sex, $type, $category, $user,
     $confirmed, $state
@@ -80,16 +110,16 @@ function db_insert(
     $con = db_connect();
 
     $sql_insert="INSERT INTO items ";
-    $sql_insert.=" (logo , name, breed , color, color_code, birth, father, mother, litter, sex, type, category, user, confirmed, state) VALUES ";
+    $sql_insert.=" (id, logo, name, breed , color, color_code, birth, father, mother, litter, sex, type, category, user, confirmed, state) VALUES ";
     ////sample ('img/father1.jpg', 'Father Cat#1', 'Британская к/ш', 'Черный затушеванный пойнт', 'ny 10 11', '13.07.2009', null, null, null, 'male', 'cat', 'коты', 1, 1)";
-    $sql_insert.="  ( '$logo', '$name', '$breed', '$color', '$color_code', '$birth', $father, $mother, '$litter', '$sex', '$type', '$category', $user, $confirmed, '$state')";
+    $sql_insert.="  ($id, '$logo', '$name', '$breed', '$color', '$color_code', '$birth', $father, $mother, '$litter', '$sex', '$type', '$category', $user, $confirmed, '$state')";
 
     //return $sql_insert;
 
     $result = $con->query($sql_insert);
 
     $con->close();
-    return $result;
+    return $id;
 }
 
 function login($user_name, $user_pass){
