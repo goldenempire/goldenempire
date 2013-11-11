@@ -36,6 +36,25 @@ try {
         echo JSON_stringify( login($_POST['user_name'], $_POST['user_pass']) );
     } else if('logout'==$_POST['action']) {
         echo JSON_stringify( logout() );
+    } else if('insert'==$_POST['action']) {
+        echo JSON_stringify( db_insert(
+            $_POST['logo'],
+            $_POST['name'],
+            $_POST['breed'],
+            $_POST['color'],
+            $_POST['color_code'],
+            $_POST['birth'],
+            $_POST['father'],
+             $_POST['mother'],
+            $_POST['litter'],
+            $_POST['sex'],
+            $_POST['type'],
+            $_POST['category'],
+            1,
+            1,
+            $_POST['state']
+        ) );
+        //echo var_dump($_POST);
     } else {
         throw new Exception("Не известная операция".$_POST['action']);
     }

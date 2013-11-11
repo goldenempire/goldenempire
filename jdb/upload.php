@@ -11,12 +11,11 @@ function JSON_stringify($j){
 
    if($_FILES["userfile"]["size"] > 1024*3*1024)
    {
-     echo ("������ 䠩�� �ॢ�蠥� �� ��������");
+     echo ("Файл слишком большой");
      exit;
    }
 
    $b = 0;
-   // �஢��塞 ����㦥� �� 䠩�
    if(!is_uploaded_file($_FILES["userfile"]["name"]))
    {
      // �᫨ 䠩� ����㦥� �ᯥ譮, ��६�頥� ���

@@ -182,10 +182,11 @@ var main = {
                         //console.log('welcome ', user_name);
                         $('#login_box').hide();
                         $('#greeting_box').show();
+                        $('#admin_box').show();
                         self.is_logged = true;
                         self.user_name = user_name;
                         $('#full_user_name').text(user_name);
-                        $('#enter_button').val('Выйти');
+                        //$('#enter_button').val('Выйти');
                     }
                 });
             }
@@ -193,21 +194,80 @@ var main = {
             self.logout();
         }
     },
+    upload : function(cb){
+        var file_data = $("#upload_file_input").prop("files")[0];   // Getting the properties of file from file field
+
+        console.log('file_data', file_data);
+
+        var form_data = new FormData();                  // Creating object of FormData class
+        form_data.append("file", file_data)              // Appending parameter named file with properties of file_field to form_data
+        //form_data.append("user_id", 123)                 // Adding extra parameters to form_data
+
+        var data = new FormData();
+        //data.append('file',this.files[0]);
+        data.append('uploadedfile',file_data);
+        $.ajax({
+            url: "php/upload.php",
+            /*
+             cache: false,
+             contentType: false,
+             processData: false,
+             data: file_data,                         // Setting the data attribute of ajax with file_data
+             type: 'post',
+             */
+            url: "php/upload.php",
+            type: "POST",
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                console.log('uploaded ok!', data);
+                cb();
+            },
+            error: function (data) {
+                alert(data.imageURL + "error");
+            }
+        });
+    },
+    insert : function(cb){
+        var file_data = $("#upload_file_input").prop("files")[0];
+
+        this.post({
+            action: "insert",
+            logo : 'img/'+file_data.name,
+            name : $('#db_name').val(),
+            breed : $('#db_breed').val(),
+            color : $('#db_color').val(),
+            color_code : $('#db_color_code').val(),
+            birth : $('#db_birth').val(),
+            father : 'NULL',
+            mother : 'NULL',
+            litter : $('#db_litter').val(),
+            sex : $('#db_sex').val(),
+            type : $('#db_type').val(),
+            category : $('#db_category').val(),
+            state : $('#db_state').val()
+        }, cb);
+    },
     logout : function(){
+        /*
         $('#login_hint').text('');
         $('#greeting_box').hide();
+        $('#admin_box').hide();
         var self = this;
         if(self.is_logged){
-            self.post({ action: "logout" }, function(data){
-                $('#login_box').show();
-                $('#greeting_box').hide();
-                self.is_logged = false;
-                $('#enter_button').val('Войти');
-                $('#user_pass').val('');
-                $('#full_user_name').text('...');
-
-            });
-        }
+            $('#exit_button').click();
+        }*/
+        var self = this;
+        self.post({ action: "logout" }, function(data){
+            $('#login_box').show();
+            $('#greeting_box').hide();
+            $('#admin_box').hide();
+            self.is_logged = false;
+            //$('#enter_button').val('Войти');
+            $('#user_pass').val('');
+            $('#full_user_name').text('...');
+        });
     },
     post : function(rq_data, cb){
         $.ajax({
@@ -216,8 +276,8 @@ var main = {
             data: rq_data,
             dataType:"json",
             success: function(rs_data){
-                //console.log('rq_data',rq_data);
-                //console.log('rs_data',rs_data);
+                console.log('rq_data',rq_data);
+                console.log('rs_data',rs_data);
                 if((rs_data||{}).error){
 					console.log('rs_data.error', rs_data.error);
                     cb(null, rs_data.error);
@@ -297,6 +357,24 @@ $(document).ready(function () {
     $('#enter_button').click(function(){
         main.login();
     });
+
+    $('#exit_button').click(function(){
+        main.logout();
+    });
+
+    $('#admin_button').click(function(){
+        $('.gEmSectionRight [id^=page]').removeClass('hiddenTemplate');
+        $('.gEmSectionRight [id^=page]').addClass('hiddenTemplate');
+        $('#pageAdmin').removeClass('hiddenTemplate');
+    });
+
+    //$('#ajax_add_file').click(function(){
+    $('#db_add_row').click(function(){
+        main.upload(function(){
+            main.insert(function(){});
+        });
+    });
+
 });
 
 function topMenuItemClick(){
@@ -306,6 +384,8 @@ function topMenuItemClick(){
         });
         $(this).addClass("active");
 
+
+        $('#pageAdmin').addClass('hiddenTemplate');
 		$('.gEmSectionRight [id^=page]').removeClass('hiddenTemplate');
 		$('.gEmSectionRight [id^=page]').addClass('hiddenTemplate');
 		if('pageAbout'==$(this).attr('page')){
