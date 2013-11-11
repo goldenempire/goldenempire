@@ -73,12 +73,13 @@ function db_get_max_id(){
 
     $con = db_connect();
 
-    $rs = $con->query('select max(id) from items');
-    $id = 1+$rs->fetch_row()[0];
+    //$rs = $con->query("select MAX(id) AS `maxid` from items");
+    $rs = $con->query("select MAX(id) as maxid from items");
+    $max = $rs->fetch_assoc();
 
     $con->close();
 
-    return $id;
+    return $max['maxid']+1;
 }
 
 function db_set_logo($id, $logo){
