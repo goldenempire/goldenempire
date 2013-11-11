@@ -265,7 +265,7 @@ ul.gEmMenuList li .gEmMenuListLink.active {
 .pageIndexSeparator {
 	border-top: solid 1px #cccccc;
 	border-bottom: solid 1px #ffffff;
-	margin: 10px 0 20px 0;
+	margin: 10px 0;
 }
 .pageSingle .pageIndexSeparator {
 	margin: 10px 0;
@@ -457,6 +457,23 @@ a.gEmPedigreeTableItemImg {
 	overflow: hidden;
 	margin: 0 auto;
 }
+a.gEmPedigreeTableItemImg img {
+	max-width: 60px;
+}
+a.gEmPedigreeTableItemImg.grParItemImg {
+	width: 150px;
+	height: 150px;
+}
+a.gEmPedigreeTableItemImg.grParItemImg img {
+	max-width: 160px;
+}
+a.gEmPedigreeTableItemImg.parItemImg {
+	width: 100px;
+	height: 100px;
+}
+a.gEmPedigreeTableItemImg.parItemImg img {
+	max-width: 110px;
+}
 .gEmPedigreeTableItemDesc {
 	width: 160px;
 	text-align: center;
@@ -507,6 +524,14 @@ a.gEmPhotoGallItem {
 }
 a:hover.gEmPhotoGallItem {
 	border: solid 3px #999999;
+}
+.gEmParLink {
+	color: #248dc1;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.gEmParLink:hover {
+	text-decoration: none;
 }
 
 /*left sidebar*/
