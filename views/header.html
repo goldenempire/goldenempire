@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>GoldenEmpire Cattery - <%= title %></title>
+    <link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/ge-style.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/dropzone_custom.css"/>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic&subset=latin,cyrillic-ext,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
+    <!--script src="http://stevenlevithan.com/assets/misc/date.format.js"></script-->
+    <script type="text/javascript" src="/js/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script type="text/javascript" src="/fancybox/jquery.fancybox.js"></script>
+    <script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
+    <script type="text/javascript" src="/js/jquery.nicescroll.min.js"></script>
+    <script type="text/javascript" src="/js/dropzone.js"></script>
+    <script type="text/javascript" src="/js/main2.js"></script>
+</head>
+<body page=
+<%= title %>
+>
+<div class="gEmContentArea">
+    <div class="gEmHeader">
+        <a href="index.html" class="gEmHeaderLogo" title="GoldenEmpire Cattery"></a>
+    </div>
+    <div class="gEmMenu">
+        <ul class="gEmMenuList">
+            <li><span page="about" class="gEmMenuListLink firstChild">О питомнике</span></li>
+            <li><span page="list/sales" category="акции" class="gEmMenuListLink">Акции</span></li>
+            <li><span page="list/hats" category="шляпки" class="gEmMenuListLink">Шляпки</span></li>
+            <li><span page="list/male" category="коты" class="gEmMenuListLink">Наши коты</span></li>
+            <li><span page="list/female" category="кошки" class="gEmMenuListLink">Наши кошки</span></li>
+            <li><span page="list/child" category="котята" class="gEmMenuListLink active">Котята</span></li>
+            <li><span page="list/friends" category="котята друзей" class="gEmMenuListLink lastChild">Котята друзей</span></li>
+        </ul>
+    </div>
+    <div class="gEmSection catsMalePage">
+        <div class="gEmSectionLeft">
+            <div class="gEmSidebarMenu">
+                <div class="gEmSidebarMenuItem">
+                    <div class="gEmSidebarMenuTitle">
+                        <div class="gEmSidebarMenuTitleText">Британские котята</div>
+                        <div class="gEmSidebarMenuTitleIcon"></div>
+                    </div>
+                    <ul class="gEmSidebarMenuList">
+                        <li><span class="gEmSidebarMenuListLink">Помет Y</span><span>(котята проданы)</span></li>
+                        <li><span class="gEmSidebarMenuListLink">Помет Y</span><span class="sale">(продажа)</span></li>
+                        <li><span class="gEmSidebarMenuListLink">Помет Y</span><span>(котята проданы)</span></li>
+                    </ul>
+                </div>
+                <div class="gEmSidebarMenuItem">
+                    <div class="gEmSidebarMenuTitle">
+                        <div class="gEmSidebarMenuTitleText">Шотландские котята</div>
+                        <div class="gEmSidebarMenuTitleIcon"></div>
+                    </div>
+                    <ul class="gEmSidebarMenuList">
+                        <li><span class="gEmSidebarMenuListLink">Помет Y</span><span>(котята проданы)</span></li>
+                        <li><span class="gEmSidebarMenuListLink">Помет Y</span><span class="sale">(продажа)</span></li>
+                        <li><span class="gEmSidebarMenuListLink">Помет Y</span><span>(котята проданы)</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="gEmSidebarContacts">
+                <div class="gEmSidebarContactsHeader">
+                    <div class="gEmSidebarContactsTitle">Контактная информация</div>
+                </div>
+                <div class="gEmSidebarContactsBody">
+                    <p class="compTitle">GoldenEmpire Cattery</p>
+                    <p>Kiev, Ukraine</p>
+                    <p>E-mail: <a href="mailto:catinhat@ukr.net">catinhat@ukr.net</a></p>
+                    <p>Phone: +380997408880</p>
+                    <p>Skype: Tatyana Burbeza</p>
+                </div>
+            </div>
+            <div class="gEmLogin">
+                <div class="gEmLoginHeader">
+                    <div class="gEmLoginTitle" id="logged_as">Вход на сайт</div>
+                </div>
+                <div class="gEmLoginBody">
+                    <div id="greeting_box">
+                        <span>Добро пожаловать:</span><br>
+                        <span id="full_user_name">...</span>
+                    </div>
+                    <div id="login_box">
+                        <input type="text" id="user_name" class="gEmLoginField" placeholder="Логин"/>
+                        <input type="password" id="user_pass" class="gEmLoginField" placeholder="Пароль"/>
+                        <input type="button" id="enter_button" value="Войти" class="gEmLoginButton"/><span id="login_hint" class="gEmLoginHint"></span>
+                    </div>
+
+                    <div style="display: none;" id="admin_box">
+                        <input type="button" id="exit_button" value="Выйти"/>
+                        <input type="button" id="admin_button" value="Админка"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gEmSectionRight">

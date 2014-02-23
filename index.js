@@ -87,7 +87,13 @@ var users = [
 ];
 
 app.get('/about', function(req, res){
-    res.render('index', {
-        title: "about"
+    res.render('about', {
+        title: 'about'
+    });
+});
+
+app.get('/list/:category', function(req, res){
+    res.render('list', {
+        title: 'list/'+req.params.category
     });
 });

@@ -1,0 +1,46 @@
+<% include header.html %>
+<div id="pageAdmin">
+    <!--div>Добавить файл</div>
+    <form enctype="multipart/form-data" action="php/upload.php" method="POST">
+        <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+        Choose a file to upload: <input name="uploadedfile" type="file" id="upload_file_input" /><br />
+        <input type="submit" value="Upload File" />
+
+    </form>
+    <span id="ajax_add_file">Добавить файл</span-->
+    <table id="db_append_form">
+        <tr><td><input name="uploadedfile" type="file" id="upload_file_input" /></td><td></td></tr>
+        <!--tr><td>Логотип: <td><input type="text" id="db_logo" value="img/index-cat.jpg" style="color: rgb(128, 128, 128);"></tr-->
+        <tr><td>Имя: <td><input type="text" id="db_name" value="Diamond-Pro Katalina" style="color: rgb(128, 128, 128);"></tr>
+        <!--tr><td>Категория: <td><input type="text" id="db_category" value="коты/кошки/котята" style="color: rgb(128, 128, 128);"></tr-->
+        <tr><td>Категория: <td> <form id="db_category">
+            <input type="radio" name="category" value="коты" checked="checked" />коты<br>
+            <input type="radio" name="category" value="кошки" />кошки<br>
+            <input type="radio" name="category" value="котята" />котята
+        </form> </tr>
+        <tr><td>Порода: <td><input type="text" id="db_breed" value="Британский к/ш, BRI" style="color: rgb(128, 128, 128);"></tr>
+        <tr><td>Цвет: <td><input type="text" id="db_color" value="Чёрный затушёванный пойнт" style="color: rgb(128, 128, 128);"></tr>
+        <tr><td>Код цвета: <td><input type="text" id="db_color_code" value="BRI ns 12 34" style="color: rgb(128, 128, 128);"></tr>
+        <tr><td>Дата рождения: <td><input type="text" id="db_birth" value="2013-07-20" style="color: rgb(128, 128, 128);"></tr>
+        <!--tr><td>Отец: <td><input type="text" id="db_father" value="null" style="color: rgb(128, 128, 128);"></tr>
+        <tr><td>Мать: <td><input type="text" id="db_mother" value="null" style="color: rgb(128, 128, 128);"></tr-->
+        <tr><td>Пол: <td><input type="text" id="db_sex" value="male" style="color: rgb(128, 128, 128);"></tr>
+        <tr><td>Тип: <td><input type="text" id="db_type" value="cat" style="color: rgb(128, 128, 128);"></tr>
+        <tr><td>Статус: <td><input type="text" id="db_state" value="" style="color: rgb(128, 128, 128);"></tr>
+        <tr><td>Помет: <td><input type="text" id="db_litter" value="null" style="color: rgb(128, 128, 128);"></tr>
+    </table>
+    <input type="button" id="db_add_row" value="Добавить">
+
+    <!--div class="dropfiles"> </div>
+    <div id="dz-preview-template">
+        <div class="file-preview">
+            <div class="file-filename"><span data-dz-name></span></div>
+            <div class="file-size" data-dz-size></div>
+            <img class="file-thumbnail" data-dz-thumbnail />
+            <div class="file-progress"><span class="file-upload" data-dz-uploadprogress></span></div>
+            <div class="close"></div>
+        </div>
+
+    </div-->
+</div>
+<% include footer.html %>
