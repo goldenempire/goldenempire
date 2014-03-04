@@ -60,7 +60,7 @@ app.configure(function() {
         try {
             res.json([e]);
         } catch(ce) {
-            console.log(ce);
+            console.log(ce);;
         }
     });
 });
