@@ -9,6 +9,10 @@ log4js.configure({
 var logger = log4js.getLogger('server');
 var conf = require('./conf/conf');
 
+if(process.env.PORT){
+    conf.port = process.env.PORT;
+}
+
 process.on('uncaughtException', function (ce) {
     if(!(ce instanceof Error)){
         ce = new Error(ce);
@@ -60,7 +64,7 @@ app.configure(function() {
         try {
             res.json([e]);
         } catch(ce) {
-            console.log(ce);;
+            console.log(ce);
         }
     });
 });
@@ -86,8 +90,9 @@ var users = [
     { name: 'jane', email: 'jane@learnboost.com' }
 ];
 
-app.get('/about', function(req, res){
-    res.render('about', {
+app.get('/:page', function(req, res){
+    console.log(req.params);
+    res.render(req.params.page, {
         title: 'about'
     });
 });

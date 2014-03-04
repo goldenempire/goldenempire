@@ -15,7 +15,60 @@
     <script type="text/javascript" src="fancybox/jquery.fancybox.pack.js"></script>
     <script type="text/javascript" src="js/jquery.nicescroll.min.js"></script>
     <script type="text/javascript" src="js/dropzone.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/ejs_production.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //fancybox gallery
+            $('.fancybox').fancybox();
+
+            //скролл
+            $(".gEmPhotoGallBox").niceScroll({
+                touchbehavior : false,
+                cursorcolor : "#999999",
+                cursorborder : "none",
+                background : "#ffffff",
+                cursoropacitymax : 1,
+                cursorborderradius : 0,
+                cursorwidth : 5,
+                cursorfixedheight : 60,
+                autohidemode : false
+            });
+
+            $('a.gEmIndexItemImg').mouseenter(function () {
+                $(this).find('.hiddenLink').animate({left: 0});
+            });
+            $('a.gEmIndexItemImg').mouseleave(function () {
+                $(this).find('.hiddenLink').animate({left: -256});
+            });
+            //левое меню
+            $('.gEmSidebarMenuTitle').click(function () {
+                $(this).next('ul.gEmSidebarMenuList').slideToggle(200);
+                $(this).toggleClass('active', 200);
+            });
+
+            // defult content
+            var result = new EJS({url: 'ejs/admin.ejs'}).render({  });
+            $('#pageContent').html(result);
+
+            topMenuItemClick();
+        });
+
+        function topMenuItemClick(){
+            $('.gEmMenuList > li').click(function(){
+                $('.gEmMenuList > li > span').removeClass('active');
+
+                var span = $('span', $(this));
+                span.addClass('active');
+                var page = span.attr('page');
+
+                // not ok!
+                //$(location).attr('href','/'+page);
+
+                var result = new EJS({url: 'ejs/'+page+'.ejs'}).render({  });
+                $('#pageContent').html(result);
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="gEmContentArea">
@@ -24,14 +77,13 @@
 </div>
 <div class="gEmMenu">
     <ul class="gEmMenuList">
-        <li><span page="pageAbout" class="gEmMenuListLink firstChild">О питомнике</span></li>
-        <li><span page="pageList" category="акции" class="gEmMenuListLink">Акции</span></li>
-        <li><span page="pageList" category="шляпки" class="gEmMenuListLink">Шляпки</span></li>
-        <li><span page="pageList" category="коты" class="gEmMenuListLink">Наши коты</span></li>
-        <li><span page="pageList" category="кошки" class="gEmMenuListLink">Наши кошки</span></li>
-        <li><span page="pageList" category="котята" class="gEmMenuListLink active">Котята</span></li>
-        <li><span page="pageAdmin" category="" class="gEmMenuListLink hiddenTemplate">Котята</span></li>
-        <li><span page="pageList" category="котята друзей" class="gEmMenuListLink lastChild">Котята друзей</span></li>
+        <li><span page="about" class="gEmMenuListLink firstChild">О питомнике</span></li>
+        <li><span page="list" category="акции" class="gEmMenuListLink">Акции</span></li>
+        <li><span page="list" category="шляпки" class="gEmMenuListLink">Шляпки</span></li>
+        <li><span page="list" category="коты" class="gEmMenuListLink">Наши коты</span></li>
+        <li><span page="list" category="кошки" class="gEmMenuListLink">Наши кошки</span></li>
+        <li><span page="list" category="котята" class="gEmMenuListLink active">Котята</span></li>
+        <li><span page="list" category="котята друзей" class="gEmMenuListLink lastChild">Котята друзей</span></li>
     </ul>
 </div>
 <div class="gEmSection catsMalePage">
@@ -72,326 +124,8 @@
             <p>Skype: Tatyana Burbeza</p>
         </div>
     </div>
-	<div class="gEmLogin">
-		<div class="gEmLoginHeader">
-			<div class="gEmLoginTitle" id="logged_as">Вход на сайт</div>
-		</div>
-		<div class="gEmLoginBody">
-            <div id="greeting_box">
-                <span>Добро пожаловать:</span><br>
-                <span id="full_user_name">...</span>
-            </div>
-			<div id="login_box">
-				<input type="text" id="user_name" class="gEmLoginField" placeholder="Логин"/>
-				<input type="password" id="user_pass" class="gEmLoginField" placeholder="Пароль"/>
-                <input type="button" id="enter_button" value="Войти" class="gEmLoginButton"/><span id="login_hint" class="gEmLoginHint"></span>
-			</div>
-
-			<div style="display: none;" id="admin_box">
-				<input type="button" id="exit_button" value="Выйти"/>
-				<input type="button" id="admin_button" value="Админка"/>
-			</div>
-		</div>
-	</div>
 </div>
-<div class="gEmSectionRight">
-    <div class="hiddenTemplate" id="pageSingle">
-    <div class="gEmBreadcrumbsBox">Наши коты / Сheese cake snezhny bars</div>
-    <div class="gEmIndexItemBox">
-        <h2 class="pageSingleTitle" id='db_name_text'>Сheese cake snezhny bars</h2>
-        <div class="gEmIndexItemImg">
-            <img src="img/index-cat-empty-big_256x200px.jpg" id='db_logo_src'/>
-        </div>
-        <div class="gEmIndexItemDesc">
-            <p id='db_breed_text'><strong>Порода:</strong> <span>Британская к/ш, BRI</span></p>
-            <p id='db_color_text'><strong>Окрас:</strong> <span>Чёрный затушёванный пойнт</span></p>
-            <p id='db_birth_text'><strong>Дата рождения:</strong> <span>11.11.2011</span></p>
-            <p id='db_father_text'><strong>Отец:</strong> <span>Diamond-Pro Grand Bear, BRI ns 11</span></p>
-            <p id='db_mother_text'><strong>Мать:</strong> <span>Diamond-Pro Katalina, BRI ns 12 3322</span></p>
-            <p><div class="gEmIndexPriceBox" id='db_state_text'>2 500</div></p>
-        </div>
-        <div class="gEmButtonsBox">
-            <a href="#" class="gEmPhoto">Фотогалерея</a>
-            <a href="#" class="gEmPedigree">Родословная</a>
-            <a href="#" class="gEmLitters">Пометы</a>
-            <a href="#" class="gEmProgress">Достижения</a>
-        </div>
-    </div>
-    <div class="pageIndexSeparator"></div>
-    <div class="gEmSingleItem gEmPedigreeBox">
-        <div class="gEmSinglePartTitle">Родословная</div>
-        <table class="gEmPedigreeTable" cellspacing="0" cellpadding="0" border="0">
-            <tr>
-                <td rowspan="4">
-                    <div class="gEmPedigreeTableItem">
-                        <a class="gEmPedigreeTableItemImg grParItemImg">
-                            <img src="img/index-cat-empty-150.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td rowspan="2">
-                    <div class="gEmPedigreeTableItem">
-                        <a class="gEmPedigreeTableItemImg parItemImg">
-                            <img src="img/index-cat-empty-100.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td rowspan="2">
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg parItemImg">
-                            <img src="img/index-cat-empty-100.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td rowspan="4">
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg grParItemImg">
-                            <img src="img/index-cat-empty-150.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td rowspan="2">
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg parItemImg">
-                            <img src="img/index-cat-empty-100.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td rowspan="2">
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg parItemImg">
-                            <img src="img/index-cat-empty-100.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="gEmPedigreeTableItem">
-                        <a href="#" class="gEmPedigreeTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmPedigreeTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="pageIndexSeparator"></div>
-    <div class="gEmSingleItem gEmPhotoBox">
-        <div class="gEmSinglePartTitle">Фотогалерея</div>
-        <div class="gEmPhotoGallBox">
-            <a class="fancybox gEmPhotoGallItem" href="gallery/1_b.jpg" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="gallery/1_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/2_b.jpg" data-fancybox-group="gallery" title="Etiam quis mi eu elit temp"><img src="gallery/2_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/3_b.jpg" data-fancybox-group="gallery" title="Cras neque mi, semper leon"><img src="gallery/3_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/4_b.jpg" data-fancybox-group="gallery" title="Sed vel sapien vel sem uno"><img src="gallery/4_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/1_b.jpg" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="gallery/1_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/2_b.jpg" data-fancybox-group="gallery" title="Etiam quis mi eu elit temp"><img src="gallery/2_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/3_b.jpg" data-fancybox-group="gallery" title="Cras neque mi, semper leon"><img src="gallery/3_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/4_b.jpg" data-fancybox-group="gallery" title="Sed vel sapien vel sem uno"><img src="gallery/4_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/1_b.jpg" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="gallery/1_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/2_b.jpg" data-fancybox-group="gallery" title="Etiam quis mi eu elit temp"><img src="gallery/2_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/3_b.jpg" data-fancybox-group="gallery" title="Cras neque mi, semper leon"><img src="gallery/3_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/4_b.jpg" data-fancybox-group="gallery" title="Sed vel sapien vel sem uno"><img src="gallery/4_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/1_b.jpg" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="gallery/1_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/2_b.jpg" data-fancybox-group="gallery" title="Etiam quis mi eu elit temp"><img src="gallery/2_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/3_b.jpg" data-fancybox-group="gallery" title="Cras neque mi, semper leon"><img src="gallery/3_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/4_b.jpg" data-fancybox-group="gallery" title="Sed vel sapien vel sem uno"><img src="gallery/4_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/1_b.jpg" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="gallery/1_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/2_b.jpg" data-fancybox-group="gallery" title="Etiam quis mi eu elit temp"><img src="gallery/2_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/3_b.jpg" data-fancybox-group="gallery" title="Cras neque mi, semper leon"><img src="gallery/3_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-            <a class="fancybox gEmPhotoGallItem" href="gallery/4_b.jpg" data-fancybox-group="gallery" title="Sed vel sapien vel sem uno"><img src="gallery/4_s.jpg" class="gEmPhotoGallThumb" alt="" /></a>
-        </div>
-    </div>
-    <div class="pageIndexSeparator"></div>
-    <div class="gEmSingleItem gEmLittersBox">
-        <div class="gEmSinglePartTitle">Пометы</div>
-        <table class="gEmLittersTable" cellspacing="0" cellpadding="0" border="0">
-            <tr>
-                <td>
-                    <div class="gEmLittersTableItem">
-                        <a href="#" class="gEmLittersTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmLittersTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td class="gEmLittersTableLitters">AII, AI, C9, B6</td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="gEmLittersTableItem">
-                        <a href="#" class="gEmLittersTableItemImg">
-                            <img src="img/index-cat-empty.png" />
-                        </a>
-                        <div class="gEmLittersTableItemDesc">Кот, порода</div>
-                    </div>
-                </td>
-                <td class="gEmLittersTableLitters">AII, AI, C9, B6</td>
-            </tr>
-        </table>
-    </div>
-    <div class="pageIndexSeparator"></div>
-    <div class="gEmSingleItem gEmProgressBox">
-        <div class="gEmSinglePartTitle">Достижения</div>
-    </div>
-    </div>
-    <div class="hiddenTemplate" id="pageList">
-        <!--div class="gEmBreadcrumbsBox">Наши коты</div-->
-        <div class="gEmIndexItemBox">
-            <a class="gEmIndexItemImg">
-                <img src="img/index-cat-empty-big_256x200px.jpg" id='db_logo_src' />
-            </a>
-            <div class="gEmIndexItemDesc">
-                <h2><a id="db_name_text">Сheese cake snezhny bars</a></h2>
-                <p id='db_breed_text'><strong>Порода:</strong> <span>Британская к/ш, BRI</span></p>
-                <p id='db_color_text'><strong>Окрас:</strong> <span>Чёрный затушёванный пойнт</span></p>
-                <p id='db_birth_text'><strong>Дата рождения:</strong> <span>13.07.2009</span></p>
-                <p id='db_father_text'><strong>Отец:</strong> <span id="cat_link_father" class="gEmParLink">Diamond-Pro Grand Bear, BRI ns 11</span></p>
-                <p id='db_mother_text'><strong>Мать:</strong> <span id="cat_link_mother" class="gEmParLink">Diamond-Pro Katalina, BRI ns 12 33</span></p>
-                <p><div class="gEmIndexPriceBox" id='db_state_text'>2 500</div></p>
-            </div>
-            <div class="gEmButtonsBox">
-                <a href="#" class="gEmPhoto">Фотогалерея</a>
-                <a href="#" class="gEmPedigree">Родословная</a>
-                <a href="#" class="gEmLitters">Пометы</a>
-                <a href="#" class="gEmProgress">Достижения</a>
-            </div>
-        </div>
-        <div class="pageIndexSeparator"></div>
-    </div>
-    <div class="hiddenTemplate" id="pageAdmin">
-        <!--div>Добавить файл</div>
-        <form enctype="multipart/form-data" action="php/upload.php" method="POST">
-            <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
-            Choose a file to upload: <input name="uploadedfile" type="file" id="upload_file_input" /><br />
-            <input type="submit" value="Upload File" />
-
-        </form>
-        <span id="ajax_add_file">Добавить файл</span-->
-        <table id="db_append_form">
-            <tr><td><input name="uploadedfile" type="file" id="upload_file_input" /></td><td></td></tr>
-            <!--tr><td>Логотип: <td><input type="text" id="db_logo" value="img/index-cat.jpg" style="color: rgb(128, 128, 128);"></tr-->
-            <tr><td>Имя: <td><input type="text" id="db_name" value="Diamond-Pro Katalina" style="color: rgb(128, 128, 128);"></tr>
-            <!--tr><td>Категория: <td><input type="text" id="db_category" value="коты/кошки/котята" style="color: rgb(128, 128, 128);"></tr-->
-            <tr><td>Категория: <td> <form id="db_category">
-                <input type="radio" name="category" value="коты" checked="checked" />коты<br>
-                <input type="radio" name="category" value="кошки" />кошки<br>
-                <input type="radio" name="category" value="котята" />котята
-            </form> </tr>
-            <tr><td>Порода: <td><input type="text" id="db_breed" value="Британский к/ш, BRI" style="color: rgb(128, 128, 128);"></tr>
-            <tr><td>Цвет: <td><input type="text" id="db_color" value="Чёрный затушёванный пойнт" style="color: rgb(128, 128, 128);"></tr>
-            <tr><td>Код цвета: <td><input type="text" id="db_color_code" value="BRI ns 12 34" style="color: rgb(128, 128, 128);"></tr>
-            <tr><td>Дата рождения: <td><input type="text" id="db_birth" value="2013-07-20" style="color: rgb(128, 128, 128);"></tr>
-            <!--tr><td>Отец: <td><input type="text" id="db_father" value="null" style="color: rgb(128, 128, 128);"></tr>
-            <tr><td>Мать: <td><input type="text" id="db_mother" value="null" style="color: rgb(128, 128, 128);"></tr-->
-            <tr><td>Пол: <td><input type="text" id="db_sex" value="male" style="color: rgb(128, 128, 128);"></tr>
-            <tr><td>Тип: <td><input type="text" id="db_type" value="cat" style="color: rgb(128, 128, 128);"></tr>
-            <tr><td>Статус: <td><input type="text" id="db_state" value="" style="color: rgb(128, 128, 128);"></tr>
-            <tr><td>Помет: <td><input type="text" id="db_litter" value="null" style="color: rgb(128, 128, 128);"></tr>
-        </table>
-        <input type="button" id="db_add_row" value="Добавить">
-
-        <!--div class="dropfiles"> </div>
-        <div id="dz-preview-template">
-            <div class="file-preview">
-                <div class="file-filename"><span data-dz-name></span></div>
-                <div class="file-size" data-dz-size></div>
-                <img class="file-thumbnail" data-dz-thumbnail />
-                <div class="file-progress"><span class="file-upload" data-dz-uploadprogress></span></div>
-                <div class="close"></div>
-            </div>
-
-        </div-->
-    </div>
-    <div class="hiddenTemplate" id="pageAbout">
-        <h1>Мы рады приветствовать Вас на страницах нашего  виртуального дома!</h1>
-        <img src="img/about-cat-01.jpg" class="alignCenterImg">
-        <p>Наряду с традиционными серебристым и золотым окрасами британских и шотландских кошек,  наш питомник работает с  изумительно красивым,  королевским окрасом - голубое и лиловое золото. Длинная или короткая шубка  таких кошек переливается белым, кремовым, абрикосовым, голубым, лиловым цветом, а глубокие изумрудные глаза делают их просто восхитительными...</p>
-        <img src="img/about-cat-02.jpg" class="alignCenterImg">
-        <p>Мы  не относимся к категории «разведенцев», содержащих кошек в клетках и беспрерывно вяжущих несчастных животных с целью получения максимальной прибыли. Наши кошки никогда не содержались и не будут содержаться в клетках, получают должный уход, полноценное питание, ласку и любовь хозяев. Британские и шотландские кошки очень привязаны к человеку, они преданы и  очень умны.</p>
-        <p>Приняв решение завести питомца  ответьте себе на вопрос, а сможете ли Вы ухаживать за ним, уделять достаточно внимания, обеспечивать не дешевыми кормами, а главное, прожить с ним всю его жизнь, не предать, не оставить, не выбросить на улицу как надоевшую игрушку.</p>
-        <img src="img/about-cat-03.jpg" class="alignCenterImg">
-        <p>Ответственно отнеситесь к выбору питомца. За каждым истинно породистым  котенком стоит многолетний труд целой армии профессиональных заводчиков из разных стран , которые из поколения в поколение  получали, закрепляли такое невинное детское выражение личика Вашего котенка, такой необыкновенный окрас, такую бархатистую или шелковистую шерстку, такой покладистый и доверчивый характер...</p>
-        <img src="img/about-cat-04.jpg" class="alignCenterImg">
-    </div>
-    <div id="pageDisplay">
-        Wellcome!
-    </div>
+<div class="gEmSectionRight" id="pageContent">
 </div>
 <div class="gEmFooter">
     <div class="gEmFooterCopy">&copy; Все права защищены. <strong>GoldenEmpire Cattery</strong></div>
@@ -404,4 +138,4 @@
 <!--/go top button-->
 </div>
 </body>
-</html>                                                                                                                                          
+</html>
