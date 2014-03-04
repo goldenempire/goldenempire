@@ -7,7 +7,7 @@ log4js.configure({
     ]
 });
 var logger = log4js.getLogger('server');
-var conf = require('./conf');
+var conf = require('./conf/conf');
 
 process.on('uncaughtException', function (ce) {
     if(!(ce instanceof Error)){
@@ -72,7 +72,7 @@ require('./top_menu')(app);
 
 // запускаю сервачек
 app.listen(conf.port, function() {
-    logger.info('started');
+    logger.info('started at ', conf);
 });
 // \запускаю сервачек
 
