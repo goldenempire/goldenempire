@@ -3,7 +3,7 @@ var log4js = require('log4js');
 log4js.configure({
     appenders: [
         { type: 'console' },
-        { type: 'file', filename: 'logs/server.log', category: 'server' }
+        { type: 'file', filename: '/var/log/goldenempire/server.log', category: 'server' }
     ]
 });
 var logger = log4js.getLogger('server');
