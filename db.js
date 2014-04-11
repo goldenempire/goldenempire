@@ -18,4 +18,4 @@ MongoClient.connect('mongodb://127.0.0.1:27017/goldenempire', function(err, db) 
             db.close();
         });
     });
-})
+});

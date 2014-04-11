@@ -1,5 +1,11 @@
 {
     "code" : {
+        "01": "van",
+        "02": "harlequin",
+        "03": "bicolour",
+        "04": "mitted/white point",
+        "05": "snowshoe",
+        "09": "little white spots",
         "11": "shaded",
         "12": "tipped, shel",
         "21": "tabby, agouti",
@@ -25,13 +31,7 @@
         "67": "himalayan or siam",
         "71": "straight ears",
         "72": "curled ears",
-        "73": "folded ears",
-        "01": "van",
-        "02": "harlequin",
-        "03": "bicolour",
-        "04": "mitted/white point",
-        "05": "snowshoe",
-        "09": "little white spots"
+        "73": "folded ears"
     },
     "en_ru" : {
         "shaded" : "затушеванный (1:4 вepxнeй чacти вoлoca зaтeмнeнa)",
