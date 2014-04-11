@@ -9,12 +9,61 @@
         @import "/css/demo_page.css";
         @import "/css/demo_table.css";
     </style>
-    <script type="text/javascript" language="javascript" src="/js/jquery.js">
-    </script>
-    <script type="text/javascript" language="javascript" src="/js/jquery.dataTables.js">
-    </script>
+
+    <link rel="stylesheet" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+
+    <script type="text/javascript" language="javascript" src="/js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" language="javascript" src="/js/jquery-ui-1.10.4.js"></script>
+    <script type="text/javascript" language="javascript" src="/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf-8">
+
+        // коды окрасов кошек
+        // http://cat.mau.ru/2/?p=code_all
+
+        var cat_type = ['кот', 'кошка', 'котёнок'];
+
+        var db = {};
+
+        function update_jsons(h){
+            var db_keys = ['breeds', 'colors', 'details'];
+            var k = 0;
+            for(var i in db_keys){
+                get_json(db_keys[i], function(){
+                    if(++k==db_keys.length) h(true);
+                });
+            }
+        }
+
+        function get_json(fn, h){
+            if(db[fn]) return;
+            $.get('/jdb/'+fn+'.json', function(data) {
+                db[fn] = data;
+                h(true);
+            });
+        }
+
+        function send_data(url, h){
+            $.ajax({
+                url : url,
+                type: 'get',
+                success : function (data) {
+                    if(data.error){
+                        console.log(data);
+                        h(false);
+                        return;
+                    }
+                    h(data);
+                },
+                error : function(e){
+                    console.log(e);
+                    if(h) h(false);
+                },
+                timeout: 30000 // sets timeout to 30 seconds
+            });
+        }
+
         var oTable = null;
+        var tableData = null;
 
         $(document).ready(function () {
             /*var oTable = $('#example').dataTable({
@@ -40,33 +89,28 @@
             });
 
             $('#show_all').click(function(){
+                if(!tableData) return;
+
+                var aoColumns = [];
+                var aaData = [];
+                for(var i in tableData){
+                    var a = [];
+                    var b = [];
+                    for(var j in tableData[i]){
+                        b.push( { "sTitle": j } );
+                        a.push(tableData[i][j]);
+                    }
+                    aaData.push(a);
+                    aoColumns = b;
+                }
+
                 var list_table = $('<table cellpadding="0" cellspacing="0" border="0" class="display"></table>');
                 $('#list').html('');
                 $('#list').append(list_table);
 
                 oTable = list_table.dataTable({
-                    "aaData": [
-                        /* Reduced data set */
-                        [ "Trident", "Internet Explorer 4.0", "Win 95+", 4, "X" ],
-                        [ "Trident", "Internet Explorer 5.0", "Win 95+", 5, "C" ],
-                        [ "Trident", "Internet Explorer 5.5", "Win 95+", 5.5, "A" ],
-                        [ "Trident", "Internet Explorer 6.0", "Win 98+", 6, "A" ],
-                        [ "Trident", "Internet Explorer 7.0", "Win XP SP2+", 7, "A" ],
-                        [ "Gecko", "Firefox 1.5", "Win 98+ / OSX.2+", 1.8, "A" ],
-                        [ "Gecko", "Firefox 2", "Win 98+ / OSX.2+", 1.8, "A" ],
-                        [ "Gecko", "Firefox 3", "Win 2k+ / OSX.3+", 1.9, "A" ],
-                        [ "Webkit", "Safari 1.2", "OSX.3", 125.5, "A" ],
-                        [ "Webkit", "Safari 1.3", "OSX.3", 312.8, "A" ],
-                        [ "Webkit", "Safari 2.0", "OSX.4+", 419.3, "A" ],
-                        [ "Webkit", "Safari 3.0", "OSX.4+", 522.1, "A" ]
-                    ],
-                    "aoColumns": [
-                        { "sTitle": "Engine" },
-                        { "sTitle": "Browser" },
-                        { "sTitle": "Platform" },
-                        { "sTitle": "Version", "sClass": "center" },
-                        { "sTitle": "Grade", "sClass": "center" }
-                    ],
+                    "aaData": aaData,
+                    "aoColumns": aoColumns,
                     "fnDrawCallback": function () {
                         //console.log($(this).dataTable());
 
@@ -80,11 +124,26 @@
                         table.find('td').dblclick(function(){
                             var pos = oTable.fnGetPosition( this );
                             var td = $(this);
+                            var tr = td.closest('tr');
+
+                            var row = oTable.fnGetData(pos[0]);
+                            var row_data = {}; // тут хранится новый измененный объект по этому row'ву
+                            for(var i in aoColumns){
+                                row_data[aoColumns[i].sTitle] = row[i];
+                            }
 
                             if($('input', td).length) return;
 
+
+                            var curData = aaData;
+                            if(!curData.length) curData = [curData];
+
+                            //console.log(data[pos[0]]);
+
+                            //console.log(aoColumns[pos[1]].sTitle);
+
                             var text = td.html();
-                            var edit = $('<input type="text" class="editField">')
+                            var edit = $('<input type="text" class="editField" id="'+aoColumns[pos[1]].sTitle+'">')
                                     .val(text)
                                     .focusout(function(){
                                         td.html(edit.val());
@@ -97,7 +156,7 @@
                                         }
                                     })
                                     .keypress(function(evt){
-                                        //console.log( evt.charCode );
+                                        console.log( evt.charCode );
                                         if(13==evt.charCode){ // enter key
                                             edit.blur();
                                         }
@@ -112,12 +171,127 @@
                             td.html('');
                             td.append(edit);
                             edit.focus();
+
+                            // если кликнули на тип
+                            if($('#type').length){
+                                $('#type').autocomplete({
+                                    source: cat_type,
+                                    minLength : 0
+                                });
+
+                                $('#type').on('focus', function() {
+                                    $(this).autocomplete("search", "");
+                                });
+
+                                $('#type').on('dblclick', function() {
+                                    $('#type').val('');
+                                    edit.focus();
+                                });
+
+                                $('#type').val('');
+                                edit.focus();
+                            }
+
+                            // если кликнули на групу (короткошерст..)
+                            if($('#group').length){
+                                var group_type = [];
+                                if(!db.breeds){
+                                    console.log('no breeds!!!');
+                                    return;
+                                }
+
+                                for(var i in db.breeds){
+                                    group_type.push(i);
+                                }
+
+
+                                $('#group').autocomplete({
+                                    source: group_type,
+                                    minLength : 0
+                                });
+                                
+                                $('#group').on('focus', function(event) {
+                                    $(this).autocomplete("search", "");
+                                });
+
+                                $('#group').on('dblclick', function() {
+                                    $('#group').val('');
+                                    edit.focus();
+                                });
+
+                                $('#group').val('');
+                                edit.focus();
+                            }
+
+                            // если кликнули на расу
+                            if($('#race').length){
+                                if(!db.breeds){
+                                    console.log('error: no breeds!!!');
+                                    return;
+                                }
+
+                                if(!db.breeds[row_data.group]){
+                                    console.log('error" no db.breeds[row_data.group]', row_data.group);
+                                    return;
+                                }
+
+                                var race_type = [];
+                                for(var i in db.breeds[row_data.group]){
+                                    if(0== i.indexOf('_')) continue;
+                                    race_type.push(i);
+                                }
+
+                                $('#race').autocomplete({
+                                    source: race_type,
+                                    minLength : 0
+                                });
+
+                                $('#race').on('focus', function(event) {
+                                    $(this).autocomplete("search", "");
+                                });
+
+                                $('#race').on('dblclick', function() {
+                                    $('#race').val('');
+                                    edit.focus();
+                                });
+
+                                $('#race').val('');
+                                edit.focus();
+                            }
+
+                            // если кликнуле на отца
+                            if($('#father').length){
+
+                                var fatherSource = {};
+                                for(var i in tableData){
+                                    var d = tableData[i];
+
+                                    console.log(d);
+
+                                    if(!d.father) continue;
+
+                                    fatherSource[d.father] = true;
+                                }
+                                fatherSource = Object.keys(fatherSource);
+
+                                //console.log(fatherSource);
+
+                                $('#father').autocomplete({
+                                    source: fatherSource
+                                });
+                            }
                         });
                     }
                 });
             });
 
-            $('#show_all').click();
+            send_data('/all/ru', function(data){
+                tableData = data;
+
+                update_jsons(function(){
+                    $('#show_all').click();
+                });
+            });
         });
     </script>
 </head>
@@ -157,5 +331,6 @@
     </div-->
 </div>
 <div id="list"></div>
+<input id="tags">
 </body>
 </html>
