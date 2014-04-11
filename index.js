@@ -243,13 +243,18 @@ var details = {
   '73' : 'folded ears/фолд (вперед)'
 };
 
+/*
 fs.writeFileSync('./static/jdb/breeds.json', JSON.stringify(breeds,null,'\t'));
 fs.writeFileSync('./static/jdb/details.json', JSON.stringify(details,null,'\t'));
 fs.writeFileSync('./static/jdb/colors.json', JSON.stringify(colors,null,'\t'));
+*/
+
+var q = fs.readFileSync('./static/jdb/colors.json').toString();
+q = JSON.parse(q);
 
 var tmp_db_data = [
     //{ type: 'кот', id: 1, group: 'KH', race: 'BRI', color_code: 'ny', details: '11 (25) 73', sex: 'male', birth: '2012-03-14', father_id: null, mother_id: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', description: '' },
-    { type: 'кот', id: 1, group: 'KH', race: 'BRI', color_code: 'ny', details: '11 (25) 73', sex: 'male', birth: '2012-03-14', father_id: null, mother_id: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', description: '' }
+    { type: 'кот', id: 1, group: 'KH', race: 'BRI', color_code: 'ny', color_description: '', details: '11 (25) 73', sex: 'male', birth: '2012-03-14', father: null, mother: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', details_description: '' }
 ];
 
 var tmp_db_data1 = [
@@ -265,6 +270,7 @@ var tmp_db_data1 = [
 
 
 app.get('/all/:lng', function (req, res) {
+    /*
     var lng = req.params.lng;
     if(-1==['ru', 'en'].indexOf(lng)){
         lng = 'en';
@@ -325,7 +331,7 @@ app.get('/all/:lng', function (req, res) {
         console.log(description);
 
         d.description = description;
-    }
+    }*/
 
     res.json(tmp_db_data);
 });

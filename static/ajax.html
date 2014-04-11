@@ -20,8 +20,6 @@
         // коды окрасов кошек
         // http://cat.mau.ru/2/?p=code_all
 
-        var cat_type = ['кот', 'кошка', 'котёнок'];
-
         var db = {};
 
         function update_jsons(h){
@@ -103,6 +101,15 @@
                     aaData.push(a);
                     aoColumns = b;
                 }
+                var a = [];
+                for(var i in tableData[i]){
+                    if('type'==i){
+                        a.push('new');
+                    } else {
+                        a.push('');
+                    }
+                }
+                aaData.push(a);
 
                 var list_table = $('<table cellpadding="0" cellspacing="0" border="0" class="display"></table>');
                 $('#list').html('');
@@ -111,6 +118,7 @@
                 oTable = list_table.dataTable({
                     "aaData": aaData,
                     "aoColumns": aoColumns,
+                    "aaSorting" : [],
                     "fnDrawCallback": function () {
                         //console.log($(this).dataTable());
 
@@ -129,34 +137,68 @@
                             var row = oTable.fnGetData(pos[0]);
                             var row_data = {}; // тут хранится новый измененный объект по этому row'ву
                             for(var i in aoColumns){
-                                row_data[aoColumns[i].sTitle] = row[i];
+                                row_data[aoColumns[i].sTitle] = {
+                                    val : row[i],
+                                    id : i
+                                };
+                                //console.log( row_data[aoColumns[i].sTitle] );
                             }
+                            //console.log(row_data);
 
                             if($('input', td).length) return;
 
-
-                            var curData = aaData;
-                            if(!curData.length) curData = [curData];
-
                             //console.log(data[pos[0]]);
-
                             //console.log(aoColumns[pos[1]].sTitle);
 
+                            var autocomplete_arr = [];
                             var text = td.html();
-                            var edit = $('<input type="text" class="editField" id="'+aoColumns[pos[1]].sTitle+'">')
+                            var input_id_name = aoColumns[pos[1]].sTitle;
+                            var edit = $('<input type="text" class="editField" id="'+input_id_name+'">')
                                     .val(text)
                                     .focusout(function(){
+                                        // смотрю чтобы не было пустым
+                                        if(!edit.val()){
+                                            if(text){
+                                                edit.val(text);
+                                            } else {
+                                                if(-1==['father', 'mother', 'litter'].indexOf(input_id_name)){
+                                                    console.log(1);
+                                                    edit.val(autocomplete_arr[0]);
+                                                }
+                                            }
+                                        }
                                         td.html(edit.val());
                                         if(text!=edit.val()){
-                                            td.closest('tr').attr('changed', true);
+                                            tr.attr('changed', true);
+
+                                            // обновляю связанные поля
+                                            if('color_code'==input_id_name){
+                                                var cd = $('td', tr).get(row_data.color_description.id);
+                                                cd = $(cd);
+
+                                                if(1==cd.length){
+                                                    cd.val('');
+                                                    oTable.fnUpdate( '', pos[0], row_data.color_description.id);
+                                                }
+                                            }
+                                            if('group'==input_id_name){
+                                                var cd = $('td', tr).get(row_data.race.id);
+                                                cd = $(cd);
+
+                                                if(1==cd.length){
+                                                    cd.val('');
+                                                    oTable.fnUpdate( '', pos[0], row_data.race.id);
+                                                }
+                                            }
+                                            // \обновляю связанные поля
 
                                             // обновляю значение в таблице, т.к. поиск не будет находить измененные поля
-
+                                            row_data[input_id_name].val = edit.val();
                                             oTable.fnUpdate( edit.val(), pos[0], pos[1]);
                                         }
                                     })
                                     .keypress(function(evt){
-                                        console.log( evt.charCode );
+                                        //console.log( evt.charCode );
                                         if(13==evt.charCode){ // enter key
                                             edit.blur();
                                         }
@@ -174,53 +216,19 @@
 
                             // если кликнули на тип
                             if($('#type').length){
-                                $('#type').autocomplete({
-                                    source: cat_type,
-                                    minLength : 0
-                                });
-
-                                $('#type').on('focus', function() {
-                                    $(this).autocomplete("search", "");
-                                });
-
-                                $('#type').on('dblclick', function() {
-                                    $('#type').val('');
-                                    edit.focus();
-                                });
-
-                                $('#type').val('');
-                                edit.focus();
+                                autocomplete_arr = ['кот', 'кошка', 'котёнок'];
                             }
 
                             // если кликнули на групу (короткошерст..)
                             if($('#group').length){
-                                var group_type = [];
                                 if(!db.breeds){
                                     console.log('no breeds!!!');
                                     return;
                                 }
 
                                 for(var i in db.breeds){
-                                    group_type.push(i);
+                                    autocomplete_arr.push(i);
                                 }
-
-
-                                $('#group').autocomplete({
-                                    source: group_type,
-                                    minLength : 0
-                                });
-                                
-                                $('#group').on('focus', function(event) {
-                                    $(this).autocomplete("search", "");
-                                });
-
-                                $('#group').on('dblclick', function() {
-                                    $('#group').val('');
-                                    edit.focus();
-                                });
-
-                                $('#group').val('');
-                                edit.focus();
                             }
 
                             // если кликнули на расу
@@ -230,56 +238,134 @@
                                     return;
                                 }
 
-                                if(!db.breeds[row_data.group]){
+                                if(!db.breeds[row_data.group.val]){
                                     console.log('error" no db.breeds[row_data.group]', row_data.group);
                                     return;
                                 }
 
-                                var race_type = [];
-                                for(var i in db.breeds[row_data.group]){
+                                for(var i in db.breeds[row_data.group.val]){
                                     if(0== i.indexOf('_')) continue;
-                                    race_type.push(i);
+                                    autocomplete_arr.push(i);
+                                }
+                            }
+
+                            // если кликнули на пол
+                            if($('#sex').length){
+                                autocomplete_arr = ['male', 'female'];
+                            }
+
+                            if($('#color_description').length){
+                                autocomplete_arr = [];
+                                for(var i in row_data.color_code.val){
+                                    var c = row_data.color_code.val[i];
+                                    var colors = db.colors.color[c];
+                                    if(!colors) continue;
+
+                                    if(!autocomplete_arr.length) {
+                                        autocomplete_arr = colors;
+                                    } else {
+                                        var a = [];
+                                        for(var n in autocomplete_arr){
+                                            for(var k in colors){
+                                                a.push(autocomplete_arr[n]+'/'+colors[k]);
+                                            }
+                                        }
+                                        autocomplete_arr = a;
+                                    }
                                 }
 
-                                $('#race').autocomplete({
-                                    source: race_type,
-                                    minLength : 0
-                                });
+                                //console.log(autocomplete_arr);
+                            }
 
-                                $('#race').on('focus', function(event) {
-                                    $(this).autocomplete("search", "");
-                                });
+                            if($('#color_code').length){
+                                autocomplete_arr = [];
 
-                                $('#race').on('dblclick', function() {
-                                    $('#race').val('');
-                                    edit.focus();
-                                });
+                                for(var i in db.colors.color){
+                                    autocomplete_arr.push(''+i);
+                                    for(var j in db.colors.color){
+                                        if(i==j) continue;
+                                        autocomplete_arr.push(j+''+i);
+                                    }
+                                }
 
-                                $('#race').val('');
-                                edit.focus();
+                                autocomplete_arr.sort();
                             }
 
                             // если кликнуле на отца
                             if($('#father').length){
-
-                                var fatherSource = {};
+                                autocomplete_arr = [];
                                 for(var i in tableData){
                                     var d = tableData[i];
 
-                                    console.log(d);
+                                    if(d.sex=='female') continue;
 
-                                    if(!d.father) continue;
+                                    // исключаю из названий текущее название кота
+                                    if(d.name==row_data.name.val){
+                                        continue;
+                                    }
 
-                                    fatherSource[d.father] = true;
+                                    autocomplete_arr.push(d.name);
                                 }
-                                fatherSource = Object.keys(fatherSource);
-
-                                //console.log(fatherSource);
-
-                                $('#father').autocomplete({
-                                    source: fatherSource
-                                });
                             }
+
+                            // если кликнуле на мать
+                            if($('#mother').length){
+                                autocomplete_arr = [];
+                                for(var i in tableData){
+                                    var d = tableData[i];
+
+                                    if(d.sex=='male') continue;
+
+                                    // исключаю из названий текущее название кота
+                                    if(d.name==row_data.name.val){
+                                        continue;
+                                    }
+
+                                    autocomplete_arr.push(d.name);
+                                }
+                            }
+
+                            //---
+
+                            switch(input_id_name){
+                                case 'color_code':
+                                    edit.autocomplete({
+                                        source: function(req, response) {
+                                            var a = [];
+                                            for(var i in autocomplete_arr){
+                                                if(req.term==autocomplete_arr[i][0]){
+                                                    a.push(autocomplete_arr[i]);
+                                                }
+                                            }
+                                            a.sort();
+
+                                            response(a);
+                                        },
+                                        minLength: 1,
+                                        max : 2
+                                    });
+                                    break;
+                                default:
+                                    edit.autocomplete({
+                                        source: autocomplete_arr,
+                                        minLength : 0
+                                    });
+                                    break;
+                            }
+
+                            //console.log( edit.autocomplete );
+
+                            edit.on('focus', function() {
+                                $(this).autocomplete("search", "");
+                            });
+
+                            edit.on('dblclick', function() {
+                                $('#type').val('');
+                                edit.focus();
+                            });
+
+                            edit.val('');
+                            edit.focus();
                         });
                     }
                 });
@@ -290,6 +376,7 @@
 
                 update_jsons(function(){
                     $('#show_all').click();
+                    //console.log(db);
                 });
             });
         });
