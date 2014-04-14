@@ -11,10 +11,12 @@
     </style>
 
     <link rel="stylesheet" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+    <link rel="stylesheet" href="/css/dropzone.css">
 
     <script type="text/javascript" language="javascript" src="/js/jquery-1.10.2.js"></script>
     <script type="text/javascript" language="javascript" src="/js/jquery-ui-1.10.4.js"></script>
     <script type="text/javascript" language="javascript" src="/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" language="javascript" src="/js/dropzone.js"></script>
     <script type="text/javascript" charset="utf-8">
 
         // коды окрасов кошек
@@ -348,7 +350,7 @@
                                 autocomplete_arr.sort();
                             }
 
-                            // если кликнуле на отца
+                            // если кликнули на отца
                             if($('#father').length){
                                 autocomplete_arr = [];
                                 for(var i in tableData){
@@ -426,6 +428,17 @@
                         });
                     }
                 });
+
+                var cat_names = [];
+                for(var i in tableData){
+                    var name = tableData[i].name;
+                    if(name) cat_names.push(name);
+                }
+
+                $('#cat_name').autocomplete({
+                    source: cat_names,
+                    minLength : 0
+                });
             });
 
             send_data('/get', function(data){
@@ -435,6 +448,29 @@
                     $('#reload').click();
                     //console.log(db);
                 });
+            });
+
+            $("div#my-dropzone").dropzone({
+                url: "/upload",
+                addRemoveLinks: true, // добавляю кнопку удалить
+                //autoProcessQueue:false,
+                init : function(){
+                    var _this = this;
+                    //console.log('mydropzone init', this);
+
+                    $('#submit_cat_galery').click(function(){
+                        //console.log(mydropzone.get(0).processQueue());
+                        _this.processQueue();
+                    });
+
+                    _this.on("removedfile", function(file) {
+                        console.log('removedfile', file);
+                    });
+
+                    _this.on("complete", function(file) {
+                        console.log('complete', file);
+                    });
+                }
             });
         });
     </script>
@@ -475,6 +511,9 @@
     </div-->
 </div>
 <div id="list"></div>
-<input id="tags">
+<br><hr>
+<input id="cat_name" /><input type="button" id="submit_cat_galery" value="Загрузить все фото"/>
+<div id="my-dropzone" class="dropzone"></div>
+
 </body>
 </html>

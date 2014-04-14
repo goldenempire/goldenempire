@@ -1,6 +1,7 @@
 require('date-utils');
 var fs = require('fs');
 var log4js = require('log4js');
+var Sync = require('sync');
 log4js.configure({
     appenders: [
         { type: 'console' },
@@ -115,78 +116,114 @@ MongoClient.connect('mongodb://127.0.0.1:27017/goldenempire', function(err, db) 
     app.post('/add', function(req, res){
         //console.log('req.body', req.body);
 
-        var rslts = [];
+        // todo добавлять картинки
+        Sync(function(){
+            var a = req.body;
 
-        var a = req.body;
-        for(var i in a){
-            var id = a[i]._id;
-            delete a[i]._id;
-
-            var o_id = null;
-            try {
-                o_id = new BSON.ObjectID(id);
-            } catch(ce){
-                //console.log(ce.stack);
+            var all_items = collection.find().toArray.sync(null);
+            var items = {};
+            for(var i in all_items){
+                items[all_items[i]._id] = all_items[i];
             }
 
-            update(a[i]);
-        }
+            for(var i in a){
+                var new_item = a[i];
+                var id = new_item._id;
+                delete new_item._id;
 
-        function update(item){
-            collection.find(o_id).toArray(function(err, results) {
-                if(err) return db_callback(err);
+                var item = items[id];
 
-                if(1==results.length && o_id){
-                    console.log('update', item);
-                    collection.update({_id: o_id }, {$set: item}, {}, db_callback);
+                if(!item){
+                    collection.insert.sync(null, new_item);
+                    console.log('Добавлен элемент %s', JSON.stringify(item,null,'\t'));
                 } else {
-                    console.log('insert', item);
-                    collection.insert(item, db_callback);
+                    // проверяю нужно ли обновлять
+                    var update_fields = {};
+                    for(var j in item){
+                        if(item[j]!=new_item[j]){
+                            update_fields[j] = [item[j], new_item[j]];
+                            break;
+                        }
+                    }
+
+                    if(Object.keys(update_fields).length){
+                        var o_id = new BSON.ObjectID(id);
+                        collection.update.sync(null, {_id: o_id }, {$set: item}, {});
+                        console.log('Обновлен элемент %j', id, JSON.stringify(update_fields,null,'\t'));
+                    }
                 }
-            });
-        }
-
-        function db_callback(){
-            rslts.push(arguments);
-            if(rslts.length==a.length){
-                collection.count(function(err, count) {
-                    console.log('count', count);
-
-                    res.send(rslts);
-                });
             }
-        }
+            return true;
+        }, process_response(req, res));
     });
 
     app.get('/get', function(req, res){
-        collection.find().toArray(function(err, results) {
-            //console.log('get', arguments);
-            if(err) return res.send({ error: e });
-            if(!results.length) results = tmp_db_data;
-            res.send(results);
-        });
+        Sync(function(){
+            var r = collection.find().toArray.sync(null);
 
-        collection.count(function(err, count) {
-            console.log('count', count);
-        });
+            return r;
+        }, process_response(req, res));
     });
 
     app.get('/del/:id', function(req, res){
-        var o_id = null;
-        var e = null;
-        try {
-            o_id = new BSON.ObjectID(req.params.id);
-        } catch(ce){
-            e = ce;
-            console.log(ce.stack);
-        }
+        Sync(function(){
+            var o_id = new BSON.ObjectID(req.params.id);
 
-        if(e) return res.send({ error: e});
+            var item =  collection.find(o_id).toArray.sync(null)[0];
 
-        collection.remove({_id: o_id }, function(e, result){
-            console.log(arguments);
-            if(e) return res.send({error:e});
-            res.send({result:result});
+            // удаляю id удаляемого родителя из всех потомков
+            var parent = ('male'==item.sex)?'father':'mother';
+            var search_child_condition = {};
+            search_child_condition[ parent ] = item._id;
+            var child_items =  collection.find(search_child_condition).toArray.sync(null);
+            //console.log(child_items);
+            search_child_condition[parent] = null;
+            for(var i in child_items){
+                var c_id = new BSON.ObjectID(child_items[i]._id);
+
+                collection.update.sync(null, {_id: c_id }, {$set: search_child_condition}, {});
+            }
+
+            // удаляю все связанные картинки
+            // todo
+
+            return collection.remove.sync(null, {_id: o_id });
+        }, process_response(req, res));
+
+    });
+
+    app.post('/upload', function(req, res){
+        // http://howtonode.org/af136c8ce966618cc0857dbc5e5da01e9d4d87d5/really-simple-file-uploads
+
+        Sync(function(){
+            var arr = req.files;
+            if(!arr.length) arr=[arr];
+            //console.log(arr);
+            for(var i in arr){
+                var file = arr[i].file;
+                var file_name = file.path.split('/');
+                file_name = file_name[file_name.length-1];
+                //console.log(__dirname+'/static/gallery/'+file_name);
+                console.log(file);
+
+                fs.writeFileSync(__dirname+'/static/gallery/'+file_name, fs.readFileSync(file.path));
+            }
+            return;
+        }, function(e){
+            if(e) return res.send({ error: e});
+
+            res.redirect("back");
         });
     });
 });
+
+function process_response(req, res){
+    return function(e,o){
+        if(e) {
+            console.log(e.stack||e);
+            return res.send({ error: e});
+        }
+
+        res.send(o);
+    }
+}
