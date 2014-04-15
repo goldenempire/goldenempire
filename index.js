@@ -87,11 +87,6 @@ app.listen(conf.port, function () {
 var q = fs.readFileSync('./static/jdb/colors.json').toString();
 q = JSON.parse(q);
 
-var tmp_db_data = [
-    //{ type: 'кот', id: 1, group: 'KH', race: 'BRI', color_code: 'ny', details: '11 (25) 73', sex: 'male', birth: '2012-03-14', father_id: null, mother_id: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', description: '' },
-    { _id: 1, type: 'кот', group: 'KH', race: 'BRI', color_code: 'ny', color_description: '', details: '11.25(73)', sex: 'male', birth: '2012-03-14', father: null, mother: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', details_description: '' }
-];
-
 var tmp_db_data1 = [
     {'id': 26, 'breed': 'BRI', 'logo': 'img/26.jpg', 'name': 'Golden Khalif of Britain Yard', 'color': 'ny 11 золотой затушеванный', 'color_code': 'BRI ns 12 34', 'birth': '2012-03-14', 'father': null, 'mother': null, 'litter': 'null', 'sex': 'male', 'type': 'cat', 'category': 'коты', 'state': 'Закрытый производитель', 'user': 1, 'confirmed': 1, 'created': '2013-12-21 21:47:26'},
     {'id': 32, 'breed': 'SSS', 'logo': 'img/32.jpg', 'name': 'GoldenEmpire Agata', 'color': 'ау11(25) голубая золотая затушеванная', 'color_code': 'SSS ау11', 'birth': '2013-01-29', 'father': null, 'mother': null, 'litter': 'null', 'sex': 'female', 'type': 'cat', 'category': 'кошки', 'state': 'Производитель на условиях', 'user': 1, 'confirmed': 1, 'created': '2013-12-23 10:55:54'},
@@ -117,7 +112,8 @@ MongoClient.connect('mongodb://127.0.0.1:27017/goldenempire', function(e, db) {
         console.log(arguments);
     });
 
-    gallery.remove(function(){});
+    //gallery.remove(function(){});
+    //collection.remove(function(){});
 
     require('./cats')(collection, gallery, app);
     require('./galery')(collection, gallery, app);

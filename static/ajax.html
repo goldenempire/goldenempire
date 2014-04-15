@@ -66,8 +66,11 @@
 
         var oTable = null;
         var tableData = null;
+
         var catData = null;
         var dz = null;
+        var on_load_header_data_arr = [];
+
         var changedData = {};
 
         $(document).ready(function () {
@@ -75,7 +78,7 @@
             $("div#my-dropzone").dropzone({
                 url: "/gallery/upload",
                 addRemoveLinks: true, // добавляю кнопку удалить
-                //autoProcessQueue:false,
+                //autoProcessQueue:false, // не загружать автоматом
                 dictRemoveFile : 'Удалить',
                 acceptedFiles: 'image/*',
                 uploadMultiple: false,
@@ -84,6 +87,9 @@
                     //console.log('mydropzone init', this);
 
                     dz = this;
+
+                    // прячу дефалтное сообщение дропзоны
+                    $('.dz-message').hide();
 
                     _this.on("removedfile", function(file) {
                         //console.log('removedfile', file);
@@ -118,7 +124,7 @@
             });
 
             $('#update').click(function(){
-                //console.log(changedData);
+                //console.log('changedData', changedData);
 
                 var updateData = [];
                 for(var i in changedData){
@@ -152,7 +158,7 @@
                 if(!tableData) return;
 
                 // устанавливаю порядок полей
-                var col_seq = ['type', 'group', 'race', 'color_code', 'color_description', 'details', 'sex', 'birth', 'father', 'mother', 'litter', 'name', 'state', 'details_description', 'Удалить', 'Фото', '_id'];
+                var col_seq = ['type', 'group', 'race', 'color_code', 'color_description', 'details', 'sex', 'birth', 'father', 'mother', 'litter', 'name', 'state', 'gallery_id', 'Удалить', 'Фото', '_id'];
                 var a = [];
                 for(var i in tableData){
                     var o = {};
@@ -200,6 +206,15 @@
                 }
                 aaData.push(a);
 
+                // говорю что нужно обновлять дефалтное значение
+                if(1==tableData.length && !tableData[0]._id){
+                    var o = {};
+                    for(var i in tableData[0]){
+                        o[i] = { id: i, val : tableData[0][i] };
+                    }
+                    changedData['null'] = o;
+                }
+
                 var list_table = $('<table cellpadding="0" cellspacing="0" border="0" class="display"></table>');
                 $('#list').html('');
                 $('#list').append(list_table);
@@ -209,7 +224,7 @@
                     "aaData": aaData,
                     "aoColumns": aoColumns,
                     "aaSorting" : [],
-                    "fnDrawCallback": function () {
+                    "fnDrawCallback": function () { // ok
                         //console.log($(this).dataTable());
 
                         table = $(this);
@@ -262,7 +277,30 @@
 
                             if('Фото'==input_id_name) {
                                 $('#cat_name').text(row_data.name.val);
+
                                 dz.removeAllFiles();
+                                for(var i in on_load_header_data_arr){
+                                    dz.options.removedfile.call(dz, on_load_header_data_arr[i]);
+                                }
+                                on_load_header_data_arr = [];
+
+                                console.log('dz.options', dz.options);
+
+                                send_data('/gallery/get/'+row_data._id.val, function(data){
+                                    console.log('row_data', row_data);
+                                    console.log('data', data);
+                                    var arr = data;
+                                    for(var i in arr){
+                                        var img = arr[i];
+                                        console.log('img', img);
+                                        var on_load_header_data = { name: img.original_file_name, size: img.size };
+                                        on_load_header_data_arr.push(on_load_header_data);
+
+                                        dz.options.addedfile.call( dz, on_load_header_data );
+                                        dz.options.thumbnail.call( dz, on_load_header_data, '/gallery/'+img.file_name );
+                                        //dz.options.success.call( dz, on_load_header_data ); // дорисовывает галочку
+                                    }
+                                });
                                 return;
                             }
 
@@ -438,10 +476,11 @@
 
                             //---
 
+                            console.log('input_id_name', input_id_name);
                             switch(input_id_name){
                                 case 'color_code':
                                     edit.autocomplete({
-                                        source: function(req, response) {
+                                        source: function(req, res) {
                                             var a = [];
                                             for(var i in autocomplete_arr){
                                                 if(req.term==autocomplete_arr[i][0]){
@@ -450,10 +489,20 @@
                                             }
                                             a.sort();
 
-                                            response(a);
+                                            res(a);
                                         },
                                         minLength: 1,
                                         max : 2
+                                    });
+                                    break;
+                                case 'gallery_id' :
+                                    edit.autocomplete({
+                                        source: function( req, res ) {
+                                            console.log( 'klsdkjn', row_data._id.val );
+                                            send_data('/galery/get/'+row_data._id.val, function(data){
+                                                console.log(data);
+                                            });
+                                        }
                                     });
                                     break;
                                 default:

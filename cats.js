@@ -1,6 +1,11 @@
 var Sync = require('sync');
 var BSON = require('mongodb').BSONPure;
 
+var tmp_db_data = [
+    //{ type: 'кот', id: 1, group: 'KH', race: 'BRI', color_code: 'ny', details: '11 (25) 73', sex: 'male', birth: '2012-03-14', father_id: null, mother_id: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', description: '' },
+    { _id: null, type: 'кот', group: 'KH', race: 'BRI', color_code: 'ny', color_description: '', details: '11.25(73)', sex: 'male', birth: '2012-03-14', father: null, mother: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', gallery_id: '' }
+];
+
 module.exports = function(collection, gallery, app){
     app.post('/add', function(req, res){
         //console.log('req.body', req.body);
@@ -23,7 +28,7 @@ module.exports = function(collection, gallery, app){
                 var item = items[id];
 
                 if(!item){
-                    collection.insert.sync(collectionы, new_item);
+                    collection.insert.sync(collection, new_item);
                     console.log('Добавлен элемент %s', JSON.stringify(item,null,'\t'));
                 } else {
                     // проверяю нужно ли обновлять
@@ -49,6 +54,8 @@ module.exports = function(collection, gallery, app){
     app.get('/get', function(req, res){
         Sync(function(){
             var r = collection.find().toArray.sync(null);
+
+            if(!r.length) r = tmp_db_data;
 
             return r;
         }, process_response(req, res));

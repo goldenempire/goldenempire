@@ -30,7 +30,8 @@ module.exports = function(collection, gallery, app){
 
             var galery_item = {
                 cat_id : cat_id,
-                original_file_name : file.originalFilename
+                original_file_name : file.originalFilename,
+                size: file.size
             };
             //console.log(galery_item);
 
@@ -52,12 +53,20 @@ module.exports = function(collection, gallery, app){
 
     app.post('/gallery/remove', function(req, res){
         Sync(function(){
-            var arr = gallery.find().toArray.sync(null);
-            if(arr.length<0) throw 'Отсутствует файл '+req.body.name;
+            var arr = gallery.find(req.body).toArray.sync(null);
+            if(arr.length<1) throw 'Отсутствует файл '+req.body.original_file_name;
 
             gallery.remove.sync(gallery, req.body);
 
+            fs.unlinkSync(__dirname+'/static/gallery/'+arr[0].file_name);
+
             return true;
+        }, process_response(req, res));
+    });
+
+    app.get('/gallery/get/:cat_id', function(req, res){
+        Sync(function(){
+            return gallery.find({ cat_id: req.params.cat_id }).toArray.sync(null);
         }, process_response(req, res));
     });
 };
