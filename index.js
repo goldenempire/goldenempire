@@ -107,123 +107,18 @@ var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
 var BSON = mongo.BSONPure;
 
-MongoClient.connect('mongodb://127.0.0.1:27017/goldenempire', function(err, db) {
-    if(err) throw err;
+MongoClient.connect('mongodb://127.0.0.1:27017/goldenempire', function(e, db) {
+    if(e) throw e;
 
     var collection = db.collection('db_cats1');
-    //var collection = db.collection('test_insert');
+    var gallery = db.collection('gallery');
 
-    app.post('/add', function(req, res){
-        //console.log('req.body', req.body);
-
-        // todo добавлять картинки
-        Sync(function(){
-            var a = req.body;
-
-            var all_items = collection.find().toArray.sync(null);
-            var items = {};
-            for(var i in all_items){
-                items[all_items[i]._id] = all_items[i];
-            }
-
-            for(var i in a){
-                var new_item = a[i];
-                var id = new_item._id;
-                delete new_item._id;
-
-                var item = items[id];
-
-                if(!item){
-                    collection.insert.sync(null, new_item);
-                    console.log('Добавлен элемент %s', JSON.stringify(item,null,'\t'));
-                } else {
-                    // проверяю нужно ли обновлять
-                    var update_fields = {};
-                    for(var j in item){
-                        if(item[j]!=new_item[j]){
-                            update_fields[j] = [item[j], new_item[j]];
-                            break;
-                        }
-                    }
-
-                    if(Object.keys(update_fields).length){
-                        var o_id = new BSON.ObjectID(id);
-                        collection.update.sync(null, {_id: o_id }, {$set: item}, {});
-                        console.log('Обновлен элемент %j', id, JSON.stringify(update_fields,null,'\t'));
-                    }
-                }
-            }
-            return true;
-        }, process_response(req, res));
+    gallery.find().toArray(function(err, items) {
+        console.log(arguments);
     });
 
-    app.get('/get', function(req, res){
-        Sync(function(){
-            var r = collection.find().toArray.sync(null);
+    gallery.remove(function(){});
 
-            return r;
-        }, process_response(req, res));
-    });
-
-    app.get('/del/:id', function(req, res){
-        Sync(function(){
-            var o_id = new BSON.ObjectID(req.params.id);
-
-            var item =  collection.find(o_id).toArray.sync(null)[0];
-
-            // удаляю id удаляемого родителя из всех потомков
-            var parent = ('male'==item.sex)?'father':'mother';
-            var search_child_condition = {};
-            search_child_condition[ parent ] = item._id;
-            var child_items =  collection.find(search_child_condition).toArray.sync(null);
-            //console.log(child_items);
-            search_child_condition[parent] = null;
-            for(var i in child_items){
-                var c_id = new BSON.ObjectID(child_items[i]._id);
-
-                collection.update.sync(null, {_id: c_id }, {$set: search_child_condition}, {});
-            }
-
-            // удаляю все связанные картинки
-            // todo
-
-            return collection.remove.sync(null, {_id: o_id });
-        }, process_response(req, res));
-
-    });
-
-    app.post('/upload', function(req, res){
-        // http://howtonode.org/af136c8ce966618cc0857dbc5e5da01e9d4d87d5/really-simple-file-uploads
-
-        Sync(function(){
-            var arr = req.files;
-            if(!arr.length) arr=[arr];
-            //console.log(arr);
-            for(var i in arr){
-                var file = arr[i].file;
-                var file_name = file.path.split('/');
-                file_name = file_name[file_name.length-1];
-                //console.log(__dirname+'/static/gallery/'+file_name);
-                console.log(file);
-
-                fs.writeFileSync(__dirname+'/static/gallery/'+file_name, fs.readFileSync(file.path));
-            }
-            return;
-        }, function(e){
-            if(e) return res.send({ error: e});
-
-            res.redirect("back");
-        });
-    });
+    require('./cats')(collection, gallery, app);
+    require('./galery')(collection, gallery, app);
 });
-
-function process_response(req, res){
-    return function(e,o){
-        if(e) {
-            console.log(e.stack||e);
-            return res.send({ error: e});
-        }
-
-        res.send(o);
-    }
-}

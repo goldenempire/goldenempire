@@ -66,14 +66,56 @@
 
         var oTable = null;
         var tableData = null;
+        var catData = null;
+        var dz = null;
         var changedData = {};
 
         $(document).ready(function () {
-            /*var oTable = $('#example').dataTable({
-                "bProcessing": true,
-                //"sAjaxSource": "/arrays.txt"
-                "sAjaxSource": "/admin"
-            });*/
+
+            $("div#my-dropzone").dropzone({
+                url: "/gallery/upload",
+                addRemoveLinks: true, // добавляю кнопку удалить
+                //autoProcessQueue:false,
+                dictRemoveFile : 'Удалить',
+                acceptedFiles: 'image/*',
+                uploadMultiple: false,
+                init : function(){
+                    var _this = this;
+                    //console.log('mydropzone init', this);
+
+                    dz = this;
+
+                    _this.on("removedfile", function(file) {
+                        //console.log('removedfile', file);
+                        $.ajax({
+                            type: "POST",
+                            url: '/gallery/remove',
+                            data: JSON.stringify({ original_file_name: file.name, cat_id: (catData._id||{}).val }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json',
+                            success: function(){
+                                console.log('file removed', file);
+                            },
+                            error: function(){
+                                console.log('error remove file: post', arguments);
+                            }
+                        });
+                    });
+
+                    _this.on("complete", function(file) {
+                        console.log('file added', file);
+                    });
+
+                    _this.on("addedfile", function(file){
+                        console.log('added file', file);
+                    });
+
+                    _this.on("sending", function(file, rq, formData) {
+                        // дорисовывая id кота
+                        formData.append("cat_id", (catData._id||{}).val);
+                    });
+                }
+            });
 
             $('#update').click(function(){
                 //console.log(changedData);
@@ -110,7 +152,7 @@
                 if(!tableData) return;
 
                 // устанавливаю порядок полей
-                var col_seq = ['type', 'group', 'race', 'color_code', 'color_description', 'details', 'sex', 'birth', 'father', 'mother', 'litter', 'name', 'state', 'details_description', 'Удалить', '_id'];
+                var col_seq = ['type', 'group', 'race', 'color_code', 'color_description', 'details', 'sex', 'birth', 'father', 'mother', 'litter', 'name', 'state', 'details_description', 'Удалить', 'Фото', '_id'];
                 var a = [];
                 for(var i in tableData){
                     var o = {};
@@ -119,6 +161,7 @@
                     }
                     // дорисовываю кнопку удалить
                     o['Удалить'] = 'Удалить';
+                    o['Фото'] = 'Фото';
                     a.push(o);
                 }
                 tableData = a;
@@ -161,6 +204,7 @@
                 $('#list').html('');
                 $('#list').append(list_table);
 
+                var table = null;
                 oTable = list_table.dataTable({
                     "aaData": aaData,
                     "aoColumns": aoColumns,
@@ -168,7 +212,7 @@
                     "fnDrawCallback": function () {
                         //console.log($(this).dataTable());
 
-                        var table = $(this);
+                        table = $(this);
 
                         $('th', table).click(function(){
                             // анселекчю все активные эдиты
@@ -191,6 +235,8 @@
                             }
                             //console.log('row_data', row_data);
 
+                            catData = row_data;
+
                             if($('input', td).length) return;
 
                             //console.log(data[pos[0]]);
@@ -200,7 +246,7 @@
                             var text = td.html();
                             var input_id_name = aoColumns[pos[1]].sTitle;
 
-                            console.log(input_id_name);
+                            //console.log(input_id_name);
                             if('Удалить'==input_id_name) {
                                 if(confirm('Удалить?')) {
                                     console.log(row);
@@ -211,6 +257,12 @@
                                         });
                                     });
                                 }
+                                return;
+                            }
+
+                            if('Фото'==input_id_name) {
+                                $('#cat_name').text(row_data.name.val);
+                                dz.removeAllFiles();
                                 return;
                             }
 
@@ -429,16 +481,7 @@
                     }
                 });
 
-                var cat_names = [];
-                for(var i in tableData){
-                    var name = tableData[i].name;
-                    if(name) cat_names.push(name);
-                }
-
-                $('#cat_name').autocomplete({
-                    source: cat_names,
-                    minLength : 0
-                });
+                $('tbody > tr:eq(0) > td:contains("Фото")', table).dblclick();
             });
 
             send_data('/get', function(data){
@@ -448,29 +491,6 @@
                     $('#reload').click();
                     //console.log(db);
                 });
-            });
-
-            $("div#my-dropzone").dropzone({
-                url: "/upload",
-                addRemoveLinks: true, // добавляю кнопку удалить
-                //autoProcessQueue:false,
-                init : function(){
-                    var _this = this;
-                    //console.log('mydropzone init', this);
-
-                    $('#submit_cat_galery').click(function(){
-                        //console.log(mydropzone.get(0).processQueue());
-                        _this.processQueue();
-                    });
-
-                    _this.on("removedfile", function(file) {
-                        console.log('removedfile', file);
-                    });
-
-                    _this.on("complete", function(file) {
-                        console.log('complete', file);
-                    });
-                }
             });
         });
     </script>
@@ -512,8 +532,10 @@
 </div>
 <div id="list"></div>
 <br><hr>
-<input id="cat_name" /><input type="button" id="submit_cat_galery" value="Загрузить все фото"/>
-<div id="my-dropzone" class="dropzone"></div>
+<div id="add_photo">
+    <i>Добавить фотографии для <b id="cat_name"></b></i><br>
+    <div id="my-dropzone" class="dropzone"></div>
+</div>
 
 </body>
 </html>
