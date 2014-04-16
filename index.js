@@ -69,10 +69,12 @@ app.configure(function () {
     //Error.stackTraceLimit = Infinity; // можно установить для дебага
     app.use(function (e, req, res, next) {
         // обезопасим себя ибо тут может вылететь в корку
+        if(e) console.log(e.stack||e);
+
         try {
             res.json([e]);
         } catch (ce) {
-            console.log(ce);
+            console.log(ce.stack||ce);
         }
     });
 });
@@ -112,6 +114,19 @@ app.get('/admin.html', function(req, res, next){
     res.redirect('/forbidden.html');
 });
 
+/*
+ ===
+/cat/male - все коты
+/cat/female - все кошки
+/cat/children - все котята
+/cat/children/male - все котята мальчики
+/cat/children/female - все котята девочки
+/cat/:id - один кот
+/cat/BRIny11.34 - или так один кот
+/hat/:id - одна шапка
+ ===
+*/
+
 var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
 var BSON = mongo.BSONPure;
@@ -134,5 +149,7 @@ MongoClient.connect('mongodb://127.0.0.1:27017/goldenempire', function(e, db) {
     //db_gallery.remove(function(){});
 
     require('./cats')(db_cats, db_gallery, app);
-    require('./galery')(db_cats, db_gallery, app);
+    require('./gallery')(db_cats, db_gallery, app);
+
+    require('./site')(app, db_cats, db_gallery);
 });

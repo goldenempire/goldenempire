@@ -5,7 +5,7 @@
     <title>GoldenEmpire Cattery</title>
     <link rel="stylesheet" type="text/css" href="fancybox/jquery.fancybox.css"/>
     <link rel="stylesheet" type="text/css" href="css/ge-style.css"/>
-    <link rel="stylesheet" type="text/css" href="css/dropzone_custom.css"/>
+    <!--link rel="stylesheet" type="text/css" href="css/dropzone_custom.css"/-->
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic&subset=latin,cyrillic-ext,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
@@ -14,8 +14,8 @@
     <script type="text/javascript" src="fancybox/jquery.fancybox.js"></script>
     <script type="text/javascript" src="fancybox/jquery.fancybox.pack.js"></script>
     <script type="text/javascript" src="js/jquery.nicescroll.min.js"></script>
-    <script type="text/javascript" src="js/dropzone.js"></script>
-    <script type="text/javascript" src="js/ejs_production.js"></script>
+    <!--script type="text/javascript" src="js/dropzone.js"></script-->
+    <!--script type="text/javascript" src="js/ejs_production.js"></script-->
     <script type="text/javascript">
         $(document).ready(function () {
             //fancybox gallery
@@ -47,25 +47,17 @@
             });
 
             // defult content
-            var result = new EJS({url: 'ejs/admin.ejs'}).render({  });
-            $('#pageContent').html(result);
+            //var result = new EJS({url: 'ejs/admin.ejs'}).render({  });
+            //$('#pageContent').html(result);
 
             topMenuItemClick();
         });
 
         function topMenuItemClick(){
             $('.gEmMenuList > li').click(function(){
-                $('.gEmMenuList > li > span').removeClass('active');
-
                 var span = $('span', $(this));
-                span.addClass('active');
-                var page = span.attr('page');
 
-                // not ok!
-                //$(location).attr('href','/'+page);
-
-                var result = new EJS({url: 'ejs/'+page+'.ejs'}).render({  });
-                $('#pageContent').html(result);
+                window.location.href = span.attr('category');
             });
         }
     </script>
@@ -78,12 +70,12 @@
 <div class="gEmMenu">
     <ul class="gEmMenuList">
         <li><span page="about" class="gEmMenuListLink firstChild">О питомнике</span></li>
-        <li><span page="list" category="акции" class="gEmMenuListLink">Акции</span></li>
-        <li><span page="list" category="шляпки" class="gEmMenuListLink">Шляпки</span></li>
-        <li><span page="list" category="коты" class="gEmMenuListLink">Наши коты</span></li>
-        <li><span page="list" category="кошки" class="gEmMenuListLink">Наши кошки</span></li>
-        <li><span page="list" category="котята" class="gEmMenuListLink active">Котята</span></li>
-        <li><span page="list" category="котята друзей" class="gEmMenuListLink lastChild">Котята друзей</span></li>
+        <li><span page="list" category="/sales" class="gEmMenuListLink">Акции</span></li>
+        <li><span page="list" category="/hat" class="gEmMenuListLink">Шляпки</span></li>
+        <li><span page="list" category="/cat/male" class="gEmMenuListLink">Наши коты</span></li>
+        <li><span page="list" category="/cat/female" class="gEmMenuListLink">Наши кошки</span></li>
+        <li><span page="list" category="/cat/children" class="gEmMenuListLink active">Котята</span></li>
+        <li><span page="list" category="/cat/friends" class="gEmMenuListLink lastChild">Котята друзей</span></li>
     </ul>
 </div>
 <div class="gEmSection catsMalePage">
