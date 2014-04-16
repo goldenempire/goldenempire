@@ -20,7 +20,7 @@ module.exports = function(app, db_cats, db_gallery){
             ejs.render(
                 fs.readFileSync('./views/list.html').toString()
             )
-        );
+        );;
     });
 
     app.get('/cat', function(req, res){
