@@ -11,6 +11,7 @@ module.exports = function(collection, gallery, app){
     app.post('/add', function(req, res){
         //console.log('req.body', req.body);
 
+        // todo порверить существование картинки
         Sync(function(){
             var a = req.body;
 
@@ -27,6 +28,8 @@ module.exports = function(collection, gallery, app){
 
                 var item = items[id];
 
+                //console.log('item', item);
+
                 if(!item){
                     collection.insert.sync(collection, new_item);
                     console.log('Добавлен элемент %s', JSON.stringify(new_item,null,'\t'));
@@ -34,11 +37,15 @@ module.exports = function(collection, gallery, app){
                     // проверяю нужно ли обновлять
                     var update_fields = {};
                     for(var k in new_item){
-                        if(!item[k]) continue;
+                        if(-1==Object.keys(item).indexOf(k)) continue;
                         if(item[k]!=new_item[k]){
                             update_fields[k] = new_item[k];
                         }
                     }
+
+                    //console.log('update_fields', update_fields);
+                    //console.log('id', id);
+                    //console.log('new_item', new_item);
 
                     if(Object.keys(update_fields).length){
                         var o_id = new BSON.ObjectID(id);
