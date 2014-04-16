@@ -38,7 +38,33 @@ module.exports = function(collection, gallery, app){
                     var update_fields = {};
                     for(var k in new_item){
                         if(-1==Object.keys(item).indexOf(k)) continue;
+
                         if(item[k]!=new_item[k]){
+                            if('null'==new_item[k]){
+                                update_fields[k] = null;
+                            }
+
+                            if('logo'==k){
+                                if(!gallery.find({cat_id: new_item._id, original_file_name: new_item[k]}).toArray.sync(gallery)[0]) {
+                                    console.log('Для кота "%s" нет фото с именем "%s"', new_item.name, new_item.logo);
+                                    continue;
+                                }
+                            }
+
+                            if('mother'==k){
+                                if(!collection.find({name: new_item.mother}).toArray.sync(collection)[0]) {
+                                    console.log('Для кота "%s" нет матери с именем "%s"', new_item.name, new_item.mother);
+                                    continue;
+                                }
+                            }
+
+                            if('father'==k){
+                                if(!collection.find({name: new_item.father}).toArray.sync(collection)[0]) {
+                                    console.log('Для кота "%s" нет отца с именем "%s"', new_item.name, new_item.father);
+                                    continue;
+                                }
+                            }
+
                             update_fields[k] = new_item[k];
                         }
                     }
