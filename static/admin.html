@@ -1,148 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/favicon.ico">
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/media/images/favicon.ico"/>
 
-    <title>DataTables example</title>
-    <style type="text/css" title="currentStyle">
-        @import "/css/demo_page.css";
-        @import "/css/demo_table.css";
-    </style>
-    <script type="text/javascript" language="javascript" src="/js/jquery.js">
-    </script>
-    <script type="text/javascript" language="javascript" src="/js/jquery.dataTables.js">
-    </script>
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function () {
-            $('#example').dataTable();
+<title>DataTables example</title>
+<style type="text/css" title="currentStyle">
+    @import "/css/demo_page.css";
+    @import "/css/demo_table.css";
+</style>
+
+<link rel="stylesheet" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+<link rel="stylesheet" href="/css/dropzone.css">
+
+<script type="text/javascript" language="javascript" src="/js/jquery-1.10.2.js"></script>
+<script type="text/javascript" language="javascript" src="/js/jquery-ui-1.10.4.js"></script>
+<script type="text/javascript" language="javascript" src="/js/jquery.dataTables.js"></script>
+<script type="text/javascript" language="javascript" src="/js/dropzone.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+// коды окрасов кошек
+// http://cat.mau.ru/2/?p=code_all
+
+var db = {};
+
+function update_jsons(h){
+    var db_keys = ['breeds', 'colors', 'details'];
+    var k = 0;
+    for(var i in db_keys){
+        get_json(db_keys[i], function(){
+            if(++k==db_keys.length) h(true);
         });
-    </script>
+    }
+}
+
+function get_json(fn, h){
+    if(db[fn]) return;
+    $.get('/jdb/'+fn+'.json', function(data) {
+        db[fn] = data;
+        h(true);
+    });
+}
+
+function send_data(url, h){
+    $.ajax({
+        url : url,
+        type: 'get',
+        success : function (data) {
+            console.log(data);
+
+            if(data.error){
+                console.log(data);
+                h(false);
+                return;
+            }
+            h(data);
+        },
+        error : function(e){
+            console.log(e);
+            if(h) h(false);
+        },
+        timeout: 30000 // sets timeout to 30 seconds
+    });
+}
+
+var oTable = null;
+var tableData = null;
+
+var changedData = {};
+
+$(document).ready(function () {
+    $('#update').click(function(){
+        //console.log('changedData', changedData);
+
+        var updateData = [];
+        for(var i in changedData){
+            var o = {};
+            for(var j in changedData[i]){
+                o[j] = changedData[i][j].val;
+            }
+            updateData.push(o);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '/add',
+            data: JSON.stringify(updateData),
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            success: function(){
+                console.log('post', arguments);
+                send_data('/get', function(data){
+                    tableData = data;
+                    $('#reload').click();
+                });
+            },
+            error: function(){
+                console.log('error: post', arguments);
+            }
+        });
+    });
+
+    $('#reload').click(function(){
+        if(!tableData) return;
+
+        // устанавливаю порядок полей
+        var col_seq = ['type', 'group', 'race', 'color_code', 'color_description', 'details', 'sex', 'birth', 'father', 'mother', 'litter', 'name', 'state', 'logo', 'Удалить', 'Фото', '_id'];
+        var a = [];
+        for(var i in tableData){
+            var o = {};
+            for(var j in col_seq){
+                o[col_seq[j]] = tableData[i][col_seq[j]];
+            }
+            // дорисовываю кнопку удалить
+            o['Удалить'] = 'Удалить';
+            o['Фото'] = 'Фото';
+            a.push(o);
+        }
+        tableData = a;
+        // \устанавливаю порядок полей
+
+        var aoColumns = [];
+        var aaData = [];
+        for(var i in tableData){
+            var a = [];
+            var b = [];
+            for(var j in tableData[i]){
+                if('_id'==j) {
+                    b.push( {
+                        "sTitle": j,
+                        "bSearchable": false,
+                        "bVisible":    false
+                    });
+                    a.push(tableData[i][j]);
+                } else {
+                    b.push( { "sTitle": j } );
+                    a.push(tableData[i][j]);
+                }
+            }
+            aaData.push(a);
+            aoColumns = b;
+        }
+
+        // дорисовываю добавлялку нового
+        var a = [];
+        for(var i in aoColumns){
+            if('type'==aoColumns[i].sTitle){
+                a.push('создать');
+            } else {
+                a.push('');
+            }
+        }
+        aaData.push(a);
+
+        // говорю что нужно обновлять дефалтное значение
+        if(1==tableData.length && !tableData[0]._id){
+            var o = {};
+            for(var i in tableData[0]){
+                o[i] = { id: i, val : tableData[0][i] };
+            }
+            changedData['null'] = o;
+        }
+
+        var list_table = $('<table cellpadding="0" cellspacing="0" border="0" class="display"></table>');
+        $('#list').html('');
+        $('#list').append(list_table);
+
+        var table = null;
+        oTable = list_table.dataTable({
+            "aaData": aaData,
+            "aoColumns": aoColumns,
+            "aaSorting" : [],
+            "fnDrawCallback": function () { // ok
+                //console.log($(this).dataTable());
+
+                table = $(this);
+
+                $('th', table).click(function(){
+                    // анселекчю все активные эдиты
+                    $('th', table).blur();
+                });
+
+                table.find('td').dblclick(function(){
+                    var pos = oTable.fnGetPosition( this );
+                    var td = $(this);
+                    var tr = td.closest('tr');
+
+                    var row = oTable.fnGetData(pos[0]);
+                    var row_data = {}; // тут хранится новый измененный объект по этому row'ву
+                    for(var i in aoColumns){
+                        row_data[aoColumns[i].sTitle] = {
+                            val : row[i],
+                            id : i
+                        };
+                        //console.log( row_data[aoColumns[i].sTitle] );
+                    }
+                    //console.log('row_data', row_data);
+
+                    if($('input', td).length) return;
+
+                    //console.log(data[pos[0]]);
+                    //console.log(aoColumns[pos[1]].sTitle);
+
+                    var autocomplete_arr = [];
+                    var text = td.html();
+                    var input_id_name = aoColumns[pos[1]].sTitle;
+
+                    //console.log(input_id_name);
+                    if('Удалить'==input_id_name) {
+                        if(confirm('Удалить?')) {
+                            console.log(row);
+                            send_data('/del/'+row[row.length-1], function(){
+                                send_data('/get', function(data){
+                                    tableData = data;
+                                    $('#reload').click();
+                                });
+                            });
+                        }
+                        return;
+                    }
+
+                    if('Фото'==input_id_name) {
+                        $('#cat_name').text(row_data.name.val);
+
+                        // для каждого кота своя дропзона
+                        var dz = null;
+                        var dz_id = 'dz_'+row_data._id.val;
+                        var dz_tag = $('#'+dz_id);
+
+                        if(! dz_tag.length ){
+                            //console.log('new dz!!!');
+
+                            dz_tag = $('<div class="dropzone" id="'+dz_id+'"></div>');
+                            dz_tag.appendTo( $('#add_photo') );
+
+                            dz_tag.dropzone({
+                                url: "/gallery/upload",
+                                addRemoveLinks: true, // добавляю кнопку удалить
+                                //autoProcessQueue:false, // не загружать автоматом
+                                dictRemoveFile : 'Удалить',
+                                acceptedFiles: 'image/*',
+                                uploadMultiple: false,
+                                init : function(){
+                                    dz = this;
+                                    //console.log('mydropzone init', this);
+
+                                    // прячу дефалтное сообщение дропзоны
+                                    $('.dz-message', dz_tag).hide();
+
+                                    this.on("removedfile", function(file) {
+                                        console.log('on->"removedfile"', arguments);
+                                        $.ajax({
+                                            type: "POST",
+                                            url: '/gallery/remove',
+                                            data: JSON.stringify({ original_file_name: file.name, cat_id: (row_data._id||{}).val }),
+                                            contentType: "application/json; charset=utf-8",
+                                            dataType: 'json',
+                                            success: function(){
+                                                console.log('file removed', file);
+                                            },
+                                            error: function(){
+                                                console.log('error remove file', arguments);
+                                            }
+                                        });
+                                    });
+
+                                    this.on("complete", function(file) {
+                                        console.log('file added', file);
+                                    });
+
+                                    this.on("addedfile", function(file){
+                                        console.log('added file', file, $(this));
+                                    });
+
+                                    this.on("sending", function(file, rq, formData) {
+                                        // дорисовываю id кота
+                                        formData.append("cat_id", (row_data._id||{}).val);
+                                    });
+                                }
+                            });
+
+                            // получаю новые фотки
+                            send_data('/gallery/get/'+row_data._id.val, function(data){
+                                var arr = data;
+                                for(var i in arr){
+                                    var img = arr[i];
+                                    //console.log('img', img);
+                                    var on_load_header_data = { name: img.original_file_name, size: img.size };
+
+                                    // показываю уже загруженные фото
+                                    dz.options.addedfile.call( dz, on_load_header_data );
+                                    dz.options.thumbnail.call( dz, on_load_header_data, '/gallery/'+img.file_name );
+                                    //dz.options.success.call( dz, on_load_header_data ); // дорисовывает галочку
+                                }
+                            });
+                        }
+
+                        // прячу другие дропзоны
+                        $('div .dropzone').hide();
+                        dz_tag.show();
+
+                        return;
+                    }
+
+                    var edit = $('<input type="text" class="editField" id="'+input_id_name+'">')
+                            .val(text)
+                            .focusout(function(){
+                                // смотрю чтобы не было пустым
+                                if(!edit.val() && (-1==['father', 'mother', 'litter'].indexOf(input_id_name))){
+                                    if(text){
+                                        edit.val(text||autocomplete_arr[0]);
+                                    }
+                                }
+                                td.html(edit.val());
+                                if(text!=edit.val()){
+                                    //tr.attr('changed', true);
+                                    //tr.attr('id', 'tr_'+row_data);
+                                    changedData[row_data._id.val] = row_data;
+
+                                    //console.log( 'text!=edit.val()', 'row_data', row_data );
+                                    // обновляю связанные поля
+                                    if('color_code'==input_id_name){
+                                        var cd = $('td', tr).get(row_data.color_description.id);
+                                        cd = $(cd);
+
+                                        if(1==cd.length){
+                                            cd.val('');
+                                            oTable.fnUpdate( '', pos[0], row_data.color_description.id);
+                                        }
+                                    }
+                                    if('group'==input_id_name){
+                                        var cd = $('td', tr).get(row_data.race.id);
+                                        cd = $(cd);
+
+                                        if(1==cd.length){
+                                            cd.val('');
+                                            oTable.fnUpdate( '', pos[0], row_data.race.id);
+                                        }
+                                    }
+                                    // \обновляю связанные поля
+
+                                    // обновляю значение в таблице, т.к. поиск не будет находить измененные поля
+                                    row_data[input_id_name].val = edit.val();
+                                    oTable.fnUpdate( edit.val(), pos[0], pos[1]);
+                                }
+                            })
+                            .keypress(function(evt){
+                                //console.log( evt.charCode );
+                                if(13==evt.charCode){ // enter key
+                                    edit.blur();
+                                }
+                                //console.log(arguments);
+                            })
+                            .keyup(function(evt) {
+                                if (evt.keyCode == 27) { // esc key
+                                    td.html(text);
+                                }
+                            });
+
+                    td.html('');
+                    td.append(edit);
+                    edit.focus();
+
+                    // если кликнули на тип
+                    if($('#type').length){
+                        autocomplete_arr = ['кот', 'кошка', 'котёнок'];
+                    }
+
+                    // если кликнули на групу (короткошерст..)
+                    if($('#group').length){
+                        if(!db.breeds){
+                            console.log('no breeds!!!');
+                            return;
+                        }
+
+                        for(var i in db.breeds){
+                            autocomplete_arr.push(i);
+                        }
+                    }
+
+                    // если кликнули на расу
+                    if($('#race').length){
+                        if(!db.breeds){
+                            console.log('error: no breeds!!!');
+                            return;
+                        }
+
+                        if(!db.breeds[row_data.group.val]){
+                            console.log('error" no db.breeds[row_data.group]', row_data.group);
+                            return;
+                        }
+
+                        for(var i in db.breeds[row_data.group.val]){
+                            if(0== i.indexOf('_')) continue;
+                            autocomplete_arr.push(i);
+                        }
+                    }
+
+                    // если кликнули на пол
+                    if($('#sex').length){
+                        autocomplete_arr = ['male', 'female'];
+                    }
+
+                    if($('#color_description').length){
+                        autocomplete_arr = [];
+                        for(var i in row_data.color_code.val){
+                            var c = row_data.color_code.val[i];
+                            var colors = db.colors.color[c];
+                            if(!colors) continue;
+
+                            if(!autocomplete_arr.length) {
+                                autocomplete_arr = colors;
+                            } else {
+                                var a = [];
+                                for(var n in autocomplete_arr){
+                                    for(var k in colors){
+                                        a.push(autocomplete_arr[n]+'/'+colors[k]);
+                                    }
+                                }
+                                autocomplete_arr = a;
+                            }
+                        }
+
+                        //console.log(autocomplete_arr);
+                    }
+
+                    if($('#color_code').length){
+                        autocomplete_arr = [];
+
+                        for(var i in db.colors.color){
+                            autocomplete_arr.push(''+i);
+                            for(var j in db.colors.color){
+                                if(i==j) continue;
+                                autocomplete_arr.push(j+''+i);
+                            }
+                        }
+
+                        autocomplete_arr.sort();
+                    }
+
+                    // если кликнули на отца
+                    if($('#father').length){
+                        autocomplete_arr = [];
+                        for(var i in tableData){
+                            var d = tableData[i];
+
+                            if(d.sex=='female') continue;
+
+                            // исключаю из названий текущее название кота
+                            if(d.name==row_data.name.val){
+                                continue;
+                            }
+
+                            autocomplete_arr.push(d.name);
+                        }
+                    }
+
+                    // если кликнуле на мать
+                    if($('#mother').length){
+                        autocomplete_arr = [];
+                        for(var i in tableData){
+                            var d = tableData[i];
+
+                            if(d.sex=='male') continue;
+
+                            // исключаю из названий текущее название кота
+                            if(d.name==row_data.name.val){
+                                continue;
+                            }
+
+                            autocomplete_arr.push(d.name);
+                        }
+                    }
+
+                    //---
+
+                    console.log('input_id_name', input_id_name);
+                    switch(input_id_name){
+                        case 'color_code':
+                            edit.autocomplete({
+                                source: function(req, res) {
+                                    var a = [];
+                                    for(var i in autocomplete_arr){
+                                        if(req.term==autocomplete_arr[i][0]){
+                                            a.push(autocomplete_arr[i]);
+                                        }
+                                    }
+                                    a.sort();
+
+                                    res(a);
+                                },
+                                minLength: 1,
+                                max : 2
+                            });
+                            break;
+                        case 'logo' :
+                            edit.autocomplete({
+                                source: function( req, res ) {
+                                    //console.log( 'klsdkjn', row_data._id.val );
+                                    send_data('/gallery/get/'+row_data._id.val, function(data){
+                                        //console.log('/gallery/get//////', data);
+                                        var a = [];
+                                        for(var i in data){
+                                            a.push(data[i].original_file_name);
+                                        }
+                                        res(a);
+                                    });
+                                },
+                                minLength: 0
+                            });
+                            break;
+                        default:
+                            edit.autocomplete({
+                                source: autocomplete_arr,
+                                minLength : 0
+                            });
+                            break;
+                    }
+
+                    //console.log( edit.autocomplete );
+
+                    edit.on('focus', function() {
+                        $(this).autocomplete("search", "");
+                    });
+
+                    edit.on('dblclick', function() {
+                        $('#type').val('');
+                        edit.focus();
+                    });
+
+                    edit.val('');
+                    edit.focus();
+                });
+            }
+        });
+
+        $('tbody > tr:eq(0) > td:contains("Фото")', table).dblclick();
+    });
+
+    send_data('/get', function(data){
+        tableData = data;
+
+        update_jsons(function(){
+            $('#reload').click();
+            //console.log(db);
+        });
+    });
+});
+</script>
 </head>
-<body id="dt_example">
+<body>
 <div id="container">
     <h1>Админ панель</h1>
 
-    <div id="demo">
-        <div id="example_wrapper" class="dataTables_wrapper" role="grid">
-            <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example" width="100%"
-                   aria-describedby="example_info" style="width: 100%;">
-                <thead>
-                    <tr role="row">
-                        <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example" rowspan="1" colspan="1" aria-sort="ascending" style="width: 128px;">
-                            Rendering engine
-                        </th>
-                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 179px;">
-                            Browser
-                        </th>
-                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 170px;">
-                            Platform(s)
-                        </th>
-                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 108px;">
-                            Engine version
-                        </th>
-                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
-                            aria-label="CSS grade: activate to sort column ascending" style="width: 75px;">CSS grade
-                        </th>
-                    </tr>
-                </thead>
+    <h3><span id="update">Update</span> | <span id="reload">Reload</span></h3>
 
-                <tbody role="alert" aria-live="polite" aria-relevant="all">
-                <tr class="gradeA odd">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Firefox 1.0</td>
-                    <td class=" ">Win 98+ / OSX.2+</td>
-                    <td class="center ">1.7</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA even">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Firefox 1.5</td>
-                    <td class=" ">Win 98+ / OSX.2+</td>
-                    <td class="center ">1.8</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA odd">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Firefox 2.0</td>
-                    <td class=" ">Win 98+ / OSX.2+</td>
-                    <td class="center ">1.8</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA even">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Firefox 3.0</td>
-                    <td class=" ">Win 2k+ / OSX.3+</td>
-                    <td class="center ">1.9</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA odd">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Camino 1.0</td>
-                    <td class=" ">OSX.2+</td>
-                    <td class="center ">1.8</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA even">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Camino 1.5</td>
-                    <td class=" ">OSX.3+</td>
-                    <td class="center ">1.8</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA odd">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Netscape 7.2</td>
-                    <td class=" ">Win 95+ / Mac OS 8.6-9.2</td>
-                    <td class="center ">1.7</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA even">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Netscape Browser 8</td>
-                    <td class=" ">Win 98SE+</td>
-                    <td class="center ">1.7</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA odd">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Netscape Navigator 9</td>
-                    <td class=" ">Win 98+ / OSX.2+</td>
-                    <td class="center ">1.8</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA even">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Mozilla 1.0</td>
-                    <td class=" ">Win 95+ / OSX.1+</td>
-                    <td class="center ">1</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA odd">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Netscape Navigator 9</td>
-                    <td class=" ">Win 98+ / OSX.2+</td>
-                    <td class="center ">1.8</td>
-                    <td class="center ">A</td>
-                </tr>
-                <tr class="gradeA even">
-                    <td class=" sorting_1">Gecko</td>
-                    <td class=" ">Mozilla 1.0</td>
-                    <td class=" ">Win 95+ / OSX.1+</td>
-                    <td class="center ">1</td>
-                    <td class="center ">A</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <!--div id="dynamic">
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+            <thead>
+            <tr>
+                <th>Rendering engine</th>
+                <th>Browser</th>
+                <th>Platform(s)</th>
+                <th>Engine version</th>
+                <th>CSS grade</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot>
+            <tr>
+                <th>Rendering engine</th>
+                <th>Browser</th>
+                <th>Platform(s)</th>
+                <th>Engine version</th>
+                <th>CSS grade</th>
+            </tr>
+            </tfoot>
+        </table>
     </div>
     <div class="spacer">
-    </div>
-
-
-    <script type="text/javascript" language="javascript" src="../examples_support/syntax/js/shCore.js">
-    </script>
-
-
+    </div-->
+</div>
+<div id="list"></div>
+<br><hr>
+<div id="add_photo">
+    <i>Добавить фотографии для <b id="cat_name"></b></i><br>
 </div>
 
 </body>

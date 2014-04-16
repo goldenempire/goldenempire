@@ -78,10 +78,6 @@ app.configure(function () {
 });
 // \конфигурю express ( в скобочках чтою красивее )
 
-//------------------------------------------------------------------------------------//
-require('./top_menu')(app);
-//------------------------------------------------------------------------------------//
-
 // запускаю сервачек
 app.listen(conf.port, function () {
     logger.info('started at ', conf);
@@ -103,6 +99,18 @@ var tmp_db_data1 = [
     {'id': 31, 'breed': 'BRI', 'logo': 'img/31.jpg', 'name': 'Your Majesty Unbelievable Beauty', 'color': 'ns11  серебристая затушеванная', 'color_code': 'BRI ns 11(25)', 'birth': '2012-08-17', 'father': null, 'mother': null, 'litter': 'null', 'sex': 'female', 'type': 'cat', 'category': 'кошки', 'state': 'Производитель на условиях', 'user': 1, 'confirmed': 1, 'created': '2013-12-21 23:08:36'},
     {'id': 33, 'breed': 'SFL', 'logo': 'img/33.jpg', 'name': 'Mafdet Mint Kinder Smile', 'color': 'Лиловый золотой затушеванный су11', 'color_code': 'SFL  cy11', 'birth': '2012-09-10', 'father': null, 'mother': null, 'litter': 'null', 'sex': 'male', 'type': 'cat', 'category': 'коты', 'state': 'Закрытый производитель', 'user': 1, 'confirmed': 1, 'created': '2014-01-18 23:12:00'}
 ];
+
+app.get('/admin.html', function(req, res, next){
+    if(req.query){
+        if(req.query.login=='test'){
+            if(req.query.pass=='test'){
+                return next();
+            }
+        }
+    }
+
+    res.redirect('/forbidden.html');
+});
 
 var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
