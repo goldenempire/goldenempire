@@ -67,62 +67,9 @@
         var oTable = null;
         var tableData = null;
 
-        var catData = null;
-        var dz = null;
-        var on_load_header_data_arr = [];
-
         var changedData = {};
 
         $(document).ready(function () {
-
-            $("div#my-dropzone").dropzone({
-                url: "/gallery/upload",
-                addRemoveLinks: true, // добавляю кнопку удалить
-                //autoProcessQueue:false, // не загружать автоматом
-                dictRemoveFile : 'Удалить',
-                acceptedFiles: 'image/*',
-                uploadMultiple: false,
-                init : function(){
-                    var _this = this;
-                    //console.log('mydropzone init', this);
-
-                    dz = this;
-
-                    // прячу дефалтное сообщение дропзоны
-                    $('.dz-message').hide();
-
-                    _this.on("removedfile", function(file) {
-                        //console.log('removedfile', file);
-                        $.ajax({
-                            type: "POST",
-                            url: '/gallery/remove',
-                            data: JSON.stringify({ original_file_name: file.name, cat_id: (catData._id||{}).val }),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: 'json',
-                            success: function(){
-                                console.log('file removed', file);
-                            },
-                            error: function(){
-                                console.log('error remove file: post', arguments);
-                            }
-                        });
-                    });
-
-                    _this.on("complete", function(file) {
-                        console.log('file added', file);
-                    });
-
-                    _this.on("addedfile", function(file){
-                        console.log('added file', file);
-                    });
-
-                    _this.on("sending", function(file, rq, formData) {
-                        // дорисовывая id кота
-                        formData.append("cat_id", (catData._id||{}).val);
-                    });
-                }
-            });
-
             $('#update').click(function(){
                 //console.log('changedData', changedData);
 
@@ -158,7 +105,7 @@
                 if(!tableData) return;
 
                 // устанавливаю порядок полей
-                var col_seq = ['type', 'group', 'race', 'color_code', 'color_description', 'details', 'sex', 'birth', 'father', 'mother', 'litter', 'name', 'state', 'gallery_id', 'Удалить', 'Фото', '_id'];
+                var col_seq = ['type', 'group', 'race', 'color_code', 'color_description', 'details', 'sex', 'birth', 'father', 'mother', 'litter', 'name', 'state', 'logo', 'Удалить', 'Фото', '_id'];
                 var a = [];
                 for(var i in tableData){
                     var o = {};
@@ -250,8 +197,6 @@
                             }
                             //console.log('row_data', row_data);
 
-                            catData = row_data;
-
                             if($('input', td).length) return;
 
                             //console.log(data[pos[0]]);
@@ -278,29 +223,83 @@
                             if('Фото'==input_id_name) {
                                 $('#cat_name').text(row_data.name.val);
 
-                                dz.removeAllFiles();
-                                for(var i in on_load_header_data_arr){
-                                    dz.options.removedfile.call(dz, on_load_header_data_arr[i]);
+                                // для каждого кота своя дропзона
+                                var dz = null;
+                                var dz_id = 'dz_'+row_data._id.val;
+                                var dz_tag = $('#'+dz_id);
+
+                                if(! dz_tag.length ){
+                                    //console.log('new dz!!!');
+
+                                    dz_tag = $('<div class="dropzone" id="'+dz_id+'"></div>');
+                                    dz_tag.appendTo( $('#add_photo') );
+
+                                    dz_tag.dropzone({
+                                        url: "/gallery/upload",
+                                        addRemoveLinks: true, // добавляю кнопку удалить
+                                        //autoProcessQueue:false, // не загружать автоматом
+                                        dictRemoveFile : 'Удалить',
+                                        acceptedFiles: 'image/*',
+                                        uploadMultiple: false,
+                                        init : function(){
+                                            dz = this;
+                                            //console.log('mydropzone init', this);
+
+                                            // прячу дефалтное сообщение дропзоны
+                                            $('.dz-message', dz_tag).hide();
+
+                                            this.on("removedfile", function(file) {
+                                                console.log('on->"removedfile"', arguments);
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: '/gallery/remove',
+                                                    data: JSON.stringify({ original_file_name: file.name, cat_id: (row_data._id||{}).val }),
+                                                    contentType: "application/json; charset=utf-8",
+                                                    dataType: 'json',
+                                                    success: function(){
+                                                        console.log('file removed', file);
+                                                    },
+                                                    error: function(){
+                                                        console.log('error remove file', arguments);
+                                                    }
+                                                });
+                                            });
+
+                                            this.on("complete", function(file) {
+                                                console.log('file added', file);
+                                            });
+
+                                            this.on("addedfile", function(file){
+                                                console.log('added file', file, $(this));
+                                            });
+
+                                            this.on("sending", function(file, rq, formData) {
+                                                // дорисовываю id кота
+                                                formData.append("cat_id", (row_data._id||{}).val);
+                                            });
+                                        }
+                                    });
+
+                                    // получаю новые фотки
+                                    send_data('/gallery/get/'+row_data._id.val, function(data){
+                                        var arr = data;
+                                        for(var i in arr){
+                                            var img = arr[i];
+                                            //console.log('img', img);
+                                            var on_load_header_data = { name: img.original_file_name, size: img.size };
+
+                                            // показываю уже загруженные фото
+                                            dz.options.addedfile.call( dz, on_load_header_data );
+                                            dz.options.thumbnail.call( dz, on_load_header_data, '/gallery/'+img.file_name );
+                                            //dz.options.success.call( dz, on_load_header_data ); // дорисовывает галочку
+                                        }
+                                    });
                                 }
-                                on_load_header_data_arr = [];
 
-                                console.log('dz.options', dz.options);
+                                // прячу другие дропзоны
+                                $('div .dropzone').hide();
+                                dz_tag.show();
 
-                                send_data('/gallery/get/'+row_data._id.val, function(data){
-                                    console.log('row_data', row_data);
-                                    console.log('data', data);
-                                    var arr = data;
-                                    for(var i in arr){
-                                        var img = arr[i];
-                                        console.log('img', img);
-                                        var on_load_header_data = { name: img.original_file_name, size: img.size };
-                                        on_load_header_data_arr.push(on_load_header_data);
-
-                                        dz.options.addedfile.call( dz, on_load_header_data );
-                                        dz.options.thumbnail.call( dz, on_load_header_data, '/gallery/'+img.file_name );
-                                        //dz.options.success.call( dz, on_load_header_data ); // дорисовывает галочку
-                                    }
-                                });
                                 return;
                             }
 
@@ -319,7 +318,7 @@
                                             //tr.attr('id', 'tr_'+row_data);
                                             changedData[row_data._id.val] = row_data;
 
-                                            console.log( 'text!=edit.val()', 'row_data', row_data );
+                                            //console.log( 'text!=edit.val()', 'row_data', row_data );
                                             // обновляю связанные поля
                                             if('color_code'==input_id_name){
                                                 var cd = $('td', tr).get(row_data.color_description.id);
@@ -495,14 +494,20 @@
                                         max : 2
                                     });
                                     break;
-                                case 'gallery_id' :
+                                case 'logo' :
                                     edit.autocomplete({
                                         source: function( req, res ) {
-                                            console.log( 'klsdkjn', row_data._id.val );
-                                            send_data('/galery/get/'+row_data._id.val, function(data){
-                                                console.log(data);
+                                            //console.log( 'klsdkjn', row_data._id.val );
+                                            send_data('/gallery/get/'+row_data._id.val, function(data){
+                                                //console.log('/gallery/get//////', data);
+                                                var a = [];
+                                                for(var i in data){
+                                                    a.push(data[i].original_file_name);
+                                                }
+                                                res(a);
                                             });
-                                        }
+                                        },
+                                        minLength: 0
                                     });
                                     break;
                                 default:
@@ -548,8 +553,7 @@
 <div id="container">
     <h1>Админ панель</h1>
 
-    <h3 id="update">Update</h3>
-    <h3 id="reload">Reload</h3>
+    <h3><span id="update">Update</span> | <span id="reload">Reload</span></h3>
 
     <!--div id="dynamic">
         <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
@@ -583,7 +587,6 @@
 <br><hr>
 <div id="add_photo">
     <i>Добавить фотографии для <b id="cat_name"></b></i><br>
-    <div id="my-dropzone" class="dropzone"></div>
 </div>
 
 </body>

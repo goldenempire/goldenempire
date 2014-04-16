@@ -15,6 +15,12 @@ if (process.env.PORT) {
     conf.port = process.env.PORT;
 }
 
+if(!process.env.GALLERY_PATH) {
+    process.env.GALLERY_PATH = process.cwd()+'/static/gallery';
+}
+
+console.log( process.env.GALLERY_PATH );
+
 process.on('uncaughtException', function (ce) {
     if (!(ce instanceof Error)) {
         ce = new Error(ce);
@@ -105,16 +111,20 @@ var BSON = mongo.BSONPure;
 MongoClient.connect('mongodb://127.0.0.1:27017/goldenempire', function(e, db) {
     if(e) throw e;
 
-    var collection = db.collection('db_cats1');
-    var gallery = db.collection('gallery');
+    var db_cats = db.collection('db_cats1');
+    var db_gallery = db.collection('gallery');
 
-    gallery.find().toArray(function(err, items) {
+    db_cats.find().toArray(function(err, items) {
         console.log(arguments);
     });
 
-    //gallery.remove(function(){});
-    //collection.remove(function(){});
+    db_gallery.find().toArray(function(err, items) {
+        console.log(arguments);
+    });
 
-    require('./cats')(collection, gallery, app);
-    require('./galery')(collection, gallery, app);
+    //db_cats.remove(function(){});
+    //db_gallery.remove(function(){});
+
+    require('./cats')(db_cats, db_gallery, app);
+    require('./galery')(db_cats, db_gallery, app);
 });

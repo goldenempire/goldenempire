@@ -1,16 +1,16 @@
+var fs = require('fs');
 var Sync = require('sync');
 var BSON = require('mongodb').BSONPure;
 
 var tmp_db_data = [
     //{ type: 'кот', id: 1, group: 'KH', race: 'BRI', color_code: 'ny', details: '11 (25) 73', sex: 'male', birth: '2012-03-14', father_id: null, mother_id: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', description: '' },
-    { _id: null, type: 'кот', group: 'KH', race: 'BRI', color_code: 'ny', color_description: '', details: '11.25(73)', sex: 'male', birth: '2012-03-14', father: null, mother: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', gallery_id: '' }
+    { type: 'кот', group: 'KH', race: 'BRI', color_code: 'ny', color_description: '', details: '11.25(73)', sex: 'male', birth: '2012-03-14', father: null, mother: null, litter: null, name : 'Golden Khalif of Britain Yard', state: 'Закрытый производитель', logo: '' }
 ];
 
 module.exports = function(collection, gallery, app){
     app.post('/add', function(req, res){
         //console.log('req.body', req.body);
 
-        // todo добавлять картинки
         Sync(function(){
             var a = req.body;
 
@@ -29,20 +29,21 @@ module.exports = function(collection, gallery, app){
 
                 if(!item){
                     collection.insert.sync(collection, new_item);
-                    console.log('Добавлен элемент %s', JSON.stringify(item,null,'\t'));
+                    console.log('Добавлен элемент %s', JSON.stringify(new_item,null,'\t'));
                 } else {
                     // проверяю нужно ли обновлять
                     var update_fields = {};
-                    for(var j in item){
-                        if(item[j]!=new_item[j]){
-                            update_fields[j] = [item[j], new_item[j]];
-                            break;
+                    for(var k in new_item){
+                        if(!item[k]) continue;
+                        if(item[k]!=new_item[k]){
+                            update_fields[k] = new_item[k];
                         }
                     }
 
                     if(Object.keys(update_fields).length){
                         var o_id = new BSON.ObjectID(id);
-                        collection.update.sync(null, {_id: o_id }, {$set: item}, {});
+                        //collection.update.sync(collection, {_id: o_id }, {$set: item}, {});
+                        collection.update.sync(collection, {_id: o_id }, {$set: update_fields}, {});
                         console.log('Обновлен элемент %j', id, JSON.stringify(update_fields,null,'\t'));
                     }
                 }
@@ -55,7 +56,10 @@ module.exports = function(collection, gallery, app){
         Sync(function(){
             var r = collection.find().toArray.sync(null);
 
-            if(!r.length) r = tmp_db_data;
+            if(!r.length) {
+                collection.insert.sync(collection, tmp_db_data);
+                r = collection.find().toArray.sync(collection);
+            }
 
             return r;
         }, process_response(req, res));
@@ -81,9 +85,16 @@ module.exports = function(collection, gallery, app){
             }
 
             // удаляю все связанные картинки
-            // todo
+            var gallery_remove_query = {cat_id: req.params.id};
+            var gallery_remove_items = gallery.find(gallery_remove_query).toArray.sync(gallery);
+            gallery.remove.sync(gallery, gallery_remove_query);
+            for(var i in gallery_remove_items){
+                var unlink_file_name = process.env.GALLERY_PATH+'/'+gallery_remove_items[i].file_name;
+                fs.unlinkSync(unlink_file_name);
+                console.log('Удален файл "%s" для "%s"', unlink_file_name, item.name);
+            }
 
-            return collection.remove.sync(null, {_id: o_id });
+            return collection.remove.sync(collection, {_id: o_id });
         }, process_response(req, res));
 
     });

@@ -8,7 +8,7 @@ module.exports = function(collection, gallery, app){
     app.post('/gallery/upload', function(req, res){
         // http://howtonode.org/af136c8ce966618cc0857dbc5e5da01e9d4d87d5/really-simple-file-uploads
 
-        console.log('req.body', req.body);
+        //console.log('req.body', req.body);
 
         Sync(function(){
             var cat_id = req.body.cat_id;
@@ -43,7 +43,9 @@ module.exports = function(collection, gallery, app){
             galery_item.file_name = file_name;
             gallery.insert.sync(gallery, galery_item);
 
-            fs.writeFileSync(__dirname+'/static/gallery/'+file_name, fs.readFileSync(file.path));
+            console.log('Добавлено фото:', galery_item);
+
+            fs.writeFileSync(process.env.GALLERY_PATH+'/'+file_name, fs.readFileSync(file.path));
 
             //return gallery.find().toArray.sync(null);
             //console.log(gallery.find().toArray.sync(null));
@@ -58,7 +60,9 @@ module.exports = function(collection, gallery, app){
 
             gallery.remove.sync(gallery, req.body);
 
-            fs.unlinkSync(__dirname+'/static/gallery/'+arr[0].file_name);
+            fs.unlinkSync(process.env.GALLERY_PATH+'/'+arr[0].file_name);
+
+            console.log('Удалено фото: ', arr[0]);
 
             return true;
         }, process_response(req, res));
