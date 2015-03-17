@@ -7,8 +7,7 @@ String::_clear = ->
   .replace /^\s*/, ''
 
 Q = require 'q'
-events = require 'events'
-jsdom = require 'jsdom'
+MongoClient = require('mongodb').MongoClient
 
 webdriver = require './lib/webd.coffee'
 WebDriver = webdriver.WebDriver
@@ -57,6 +56,13 @@ all_cats = []
         cat
     .then (cats)->
       all_cats = all_cats.concat cats
+  ->
+    Q.nbind(MongoClient.connect, MongoClient) process.env.MONGO_URL
+    .then (db)=>
+      collection = db.collection 'cats'
+      Q.nbind(collection.insert, collection) all_cats
+      .then ->
+        db.close()
 ].reduce Q.when, Q()
 .catch (ce)->
   console.log ce.stack
